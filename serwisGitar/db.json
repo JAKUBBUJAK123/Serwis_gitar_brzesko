@@ -1,0 +1,23 @@
+{
+  "wypozyczenia": [
+    {
+      "nazwa": "Gitara elektryczna Squier Stratocaster",
+      "dostepnosc": "Wypożyczona",
+      "img": "https://picsum.photos/id/1074/200/140",
+      "id": "2"
+    },
+    {
+      "id": "3",
+      "nazwa": "Gitara klasyczna Cordoba C5",
+      "dostepnosc": "Wypożyczona",
+      "img": "https://picsum.photos/id/1080/200/140"
+    },
+    {
+      "nazwa": "dupa123",
+      "dostepnosc": "Wypożyczona",
+      "img": "aaa",
+      "id": "lCNJqRBnLz4"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
