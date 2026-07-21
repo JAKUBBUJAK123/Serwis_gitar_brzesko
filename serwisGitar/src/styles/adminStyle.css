@@ -1,0 +1,140 @@
+.admin-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(43, 29, 20, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.admin-modal {
+  background: var(--parchment);
+  border: 1px solid var(--brass);
+  padding: 2rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.admin-login {
+  width: 320px;
+}
+
+.admin-login form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.admin-login input {
+  padding: 0.6rem;
+  border: 1px solid var(--brass);
+  font-family: 'Lora', serif;
+}
+
+.admin-blad {
+  color: var(--wine);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.admin-akcje {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+
+.admin-panel {
+  width: min(700px, 90vw);
+  max-height: 85vh;
+  overflow-y: auto;
+  font-family: sans-serif;
+}
+
+.admin-naglowek {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.admin-formularz input,
+.admin-naglowek h3{
+    font-family: sans-serif;
+}
+.przycisk,
+.przycisk:hover,
+.przycisk:active,
+.przycisk:focus,
+.przycisk:active:hover,
+.przycisk:active:focus{
+    border: 1px solid saddlebrown;
+    border-radius: 8px;
+    background: saddlebrown;
+    color: #fff;
+    padding: 5px;
+    cursor: pointer;
+}
+.usun,
+.usun:hover,
+.usun:active,
+.usun:focus,
+.usun:active:hover,
+.usun:active:focus
+{
+    border: 1px solid rgb(189, 19, 19);
+    border-radius: 8px;
+    background: rgb(189, 19, 19);
+    color: #fff;
+    padding: 5px;  
+    cursor: pointer;
+}
+.admin-zamknij {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--walnut);
+  cursor: pointer;
+}
+
+.admin-formularz {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--parchment-dark);
+}
+
+.admin-formularz input,
+.admin-formularz select {
+  padding: 0.5rem;
+  border: 1px solid var(--brass);
+  font-family: 'Lora', serif;
+  flex: 1;
+  min-width: 140px;
+}
+
+.admin-tabela {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-tabela th,
+.admin-tabela td {
+  padding: 0.6rem;
+  border-bottom: 1px solid var(--parchment-dark);
+  text-align: left;
+}
+
+.admin-status-toggle {
+  background: none;
+  border: 1px solid var(--brass);
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.admin-akcje-kolumna {
+  display: flex;
+  gap: 0.4rem;
+}
