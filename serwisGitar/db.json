@@ -7,16 +7,38 @@
       "id": "2"
     },
     {
-      "id": "3",
-      "nazwa": "Gitara klasyczna Cordoba C5",
+      "nazwa": "terst",
       "dostepnosc": "Wypożyczona",
-      "img": "https://picsum.photos/id/1080/200/140"
+      "img": "https://picsum.photos/id/1074/200/140",
+      "id": "WJpxpvOMvJ0"
     },
     {
-      "nazwa": "dupa123",
-      "dostepnosc": "Wypożyczona",
-      "img": "aaa",
-      "id": "lCNJqRBnLz4"
+      "nazwa": "goth",
+      "dostepnosc": "Dostępna",
+      "img": "https://picsum.photos/id/1074/200/140",
+      "id": "xvD1H9o6aTY"
+    }
+  ],
+  "galeria": [
+    {
+      "opis": "Warsztat lutniczy",
+      "src": "https://picsum.photos/id/1062/800/600",
+      "id": "1"
+    },
+    {
+      "id": "3",
+      "src": "https://picsum.photos/id/1080/800/600",
+      "opis": "Wymiana strun"
+    },
+    {
+      "id": "4",
+      "src": "https://picsum.photos/id/250/800/600",
+      "opis": "Naprawa elektroniki"
+    },
+    {
+      "opis": "Regulacja gryfu",
+      "src": "https://picsum.photos/id/1074/800/600",
+      "id": "MX9kAJbkxr8"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
