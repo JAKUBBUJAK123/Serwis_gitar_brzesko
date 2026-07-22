@@ -1,6 +1,7 @@
 import '../styles/mainStyle.css'
 import { useState, useEffect } from 'react'
 import AdminPanel from './AdminComponent'
+import Navbar from './Navbar'
 
 // Placeholdery – firma podmieni zdjęcia i teksty docelowo
 const PRODUKTY = [
@@ -75,18 +76,8 @@ function MainPage() {
 
       <div className="luthier-page">
         <AdminPanel />
-        <nav className="navbar">
-          <div className="brand">
-            Serwis Gitar Brzesko
-            <span>Serwis Gitarowy</span>
-          </div>
-          <ul className="nav-links">
-            <li><a href="#o-nas">O nas</a></li>
-            <li><a href="#produkty">Produkty</a></li>
-            <li><a href="#kontakt">Kontakt</a></li>
-          </ul>
-        </nav>
 
+        <Navbar />
         <section id="o-nas" className="section o-nas">
           <div>
             <div className="eyebrow">Jebac disa</div>
