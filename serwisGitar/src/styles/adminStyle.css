@@ -28,7 +28,7 @@
 .admin-login input {
   padding: 0.6rem;
   border: 1px solid var(--brass);
-  font-family: 'Lora', serif;
+  font-family: "Lora", serif;
 }
 
 .admin-blad {
@@ -57,35 +57,34 @@
   margin-bottom: 1rem;
 }
 .admin-formularz input,
-.admin-naglowek h3{
-    font-family: sans-serif;
+.admin-naglowek h3 {
+  font-family: sans-serif;
 }
 .przycisk,
 .przycisk:hover,
 .przycisk:active,
 .przycisk:focus,
 .przycisk:active:hover,
-.przycisk:active:focus{
-    border: 1px solid saddlebrown;
-    border-radius: 8px;
-    background: saddlebrown;
-    color: #fff;
-    padding: 5px;
-    cursor: pointer;
+.przycisk:active:focus {
+  border: 1px solid saddlebrown;
+  border-radius: 8px;
+  background: saddlebrown;
+  color: #fff;
+  padding: 5px;
+  cursor: pointer;
 }
 .usun,
 .usun:hover,
 .usun:active,
 .usun:focus,
 .usun:active:hover,
-.usun:active:focus
-{
-    border: 1px solid rgb(189, 19, 19);
-    border-radius: 8px;
-    background: rgb(189, 19, 19);
-    color: #fff;
-    padding: 5px;  
-    cursor: pointer;
+.usun:active:focus {
+  border: 1px solid rgb(189, 19, 19);
+  border-radius: 8px;
+  background: rgb(189, 19, 19);
+  color: #fff;
+  padding: 5px;
+  cursor: pointer;
 }
 .admin-zamknij {
   background: none;
@@ -109,7 +108,7 @@
 .admin-formularz select {
   padding: 0.5rem;
   border: 1px solid var(--brass);
-  font-family: 'Lora', serif;
+  font-family: "Lora", serif;
   flex: 1;
   min-width: 140px;
 }
@@ -133,8 +132,69 @@
   cursor: pointer;
   font-size: 0.85rem;
 }
-
+.admin-akcje button,
+.admin-panel button {
+  border: 1px solid brown;
+  border-radius: 5px;
+  padding: 5px;
+  background: transparent;
+  cursor: pointer;
+}
 .admin-akcje-kolumna {
   display: flex;
   gap: 0.4rem;
+}
+.admin-taby {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.2rem;
+  border-bottom: 1px solid var(--parchment-dark);
+}
+
+.admin-taby button {
+  background: none;
+  border: none;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  font-family: "Fraunces", serif;
+  color: var(--walnut-light);
+  border-bottom: 2px solid transparent;
+}
+
+.admin-taby button.aktywna {
+  color: var(--wine);
+  border-bottom-color: var(--wine);
+}
+
+.admin-galeria-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
+}
+.admin-galeria-opis {
+  overflow-y: auto;
+  max-height: 130px;
+}
+.admin-galeria-kafelek {
+  border: 1px solid var(--parchment-dark);
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  max-height: 300px;
+}
+
+.admin-galeria-kafelek img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  margin-bottom: 0.4rem;
+}
+
+.admin-galeria-kafelek button {
+  margin-top: 0.4rem;
+  border: 1px solid var(--wine);
+  background: none;
+  color: var(--wine);
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
 }
