@@ -1,30 +1,29 @@
-import { useState, useEffect } from 'react'
-import Navbar from './Navbar'
-import AdminGaleriaComponent from './AdminGaleriaComponent'
-import '../styles/galeriaStyle.css'
-
+import { useState, useEffect } from "react";
+import Navbar from "./Navbar";
+import AdminGaleriaComponent from "./AdminGaleriaComponent";
+import "../styles/galeriaStyle.css";
 
 function GaleriaPage() {
-  const [zdjecia, setZdjecia] = useState([])
-  const [ladowanie, setLadowanie] = useState(true)
-  const [blad, setBlad] = useState(null)
-  const [podglad, setPodglad] = useState(null)
+  const [zdjecia, setZdjecia] = useState([]);
+  const [ladowanie, setLadowanie] = useState(true);
+  const [blad, setBlad] = useState(null);
+  const [podglad, setPodglad] = useState(null);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/galeria`)
       .then((res) => {
-        if (!res.ok) throw new Error('Błąd pobierania danych')
-        return res.json()
+        if (!res.ok) throw new Error("Błąd pobierania danych");
+        return res.json();
       })
       .then((dane) => {
-        setZdjecia(dane)
-        setLadowanie(false)
+        setZdjecia(dane);
+        setLadowanie(false);
       })
       .catch((err) => {
-        setBlad(err.message)
-        setLadowanie(false)
-      })
-  }, [])
+        setBlad(err.message);
+        setLadowanie(false);
+      });
+  }, []);
 
   return (
     <div className="luthier-page">
@@ -37,7 +36,9 @@ function GaleriaPage() {
         </p>
 
         {ladowanie && <p>Ładowanie danych...</p>}
-        {blad && <p className="status-brak">Nie udało się pobrać danych: {blad}</p>}
+        {blad && (
+          <p className="status-brak">Nie udało się pobrać danych: {blad}</p>
+        )}
 
         {!ladowanie && !blad && (
           <div className="galeria-grid">
@@ -70,9 +71,9 @@ function GaleriaPage() {
         </div>
       )}
 
-      <footer>© {new Date().getFullYear()} Serwis gitarowy Brzesko</footer>
+      <footer>© {new Date().getFullYear()} Gitarowy kącik</footer>
     </div>
-  )
+  );
 }
 
-export default GaleriaPage
+export default GaleriaPage;
