@@ -1,0 +1,45 @@
+{
+  "wypozyczenia": [
+    {
+      "nazwa": "Gitara elektryczna Squier Stratocaster",
+      "dostepnosc": "Wypożyczona",
+      "img": "http://localhost:3001/uploads/ce9d0b93-7b8b-493e-a989-926b2ae18842.jpg",
+      "id": "2"
+    },
+    {
+      "nazwa": "terst",
+      "dostepnosc": "Wypożyczona",
+      "img": "src/assets/imgs/guitar1.jpg",
+      "id": "WJpxpvOMvJ0"
+    },
+    {
+      "nazwa": "goth",
+      "dostepnosc": "Dostępna",
+      "img": "src/assets/imgs/blackRR.jpg",
+      "id": "xvD1H9o6aTY"
+    }
+  ],
+  "galeria": [
+    {
+      "opis": "Kolejny krok w stronę przywrócenia naszej Jolany do świetności za nami. Opalony korpus został pomalowany za pomocą bejcy. Po całkowitym wyschnięciu zostanie wykończony olejem do drewna. Prace nad gryfem również ruszyły. Z gryfu usunęliśmy stare zniszczone progi i połamany binding. Udało nam również się zmieniać radius z fabrycznego na 9.5''. Wkrótce przedstawimy kolejne etapy prac.",
+      "src": "src/assets/imgs/jolana.jpg",
+      "id": "1"
+    },
+    {
+      "id": "3",
+      "src": "src/assets/imgs/guitar1.jpg",
+      "opis": "Projekt V-ki został dzisiaj zakończy. Struny Ernie Ball 10-52 i strojenie do D standard. "
+    },
+    {
+      "id": "4",
+      "src": "src/assets/imgs/blackRR.jpg",
+      "opis": "Dawno nas tutaj nie było ale wracamy do gry z nowościami. Na początek wpadła nam w ręce klasyczna czarna RR. Gitara dostała nowe wykończenie oraz osprzęt. Jesteśmy dumni z efektu końcowego.  Prezentujemy całość przed jak i po zakończeniu projektu. Ps. Pozostało założenie nowych strun oraz regulacja."
+    },
+    {
+      "opis": "I jest efekt gitary po pełnym serwisie, gitara jak na swoje 40 lat prezentuje się świetnie",
+      "src": "src/assets/imgs/blackGuitar.jpg",
+      "id": "MX9kAJbkxr8"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
