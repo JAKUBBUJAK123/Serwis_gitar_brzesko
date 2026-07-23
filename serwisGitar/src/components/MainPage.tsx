@@ -1,8 +1,9 @@
 import "../styles/mainStyle.css";
 import Navbar from "./Navbar";
 import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
-// Placeholdery – firma podmieni zdjęcia i teksty docelowo
 const PRODUKTY = [
   {
     id: 1,
@@ -48,6 +49,18 @@ function StringDivider() {
 }
 
 function MainPage() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.replace("#", "");
+      setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) element.scrollIntoView({ behavior: "smooth" });
+      }, 50);
+    }
+  }, [location]);
+
   return (
     <>
       <div className="luthier-page">
