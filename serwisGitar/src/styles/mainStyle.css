@@ -15,7 +15,6 @@ body {
 html {
   scroll-behavior: smooth;
 }
-
 section[id] {
   scroll-margin-top: 90px;
 }
@@ -354,16 +353,7 @@ footer {
     font-size: 1.1rem;
   }
 }
-@media only screen and (max-width: 640px) {
-  .navbar .nav-links {
-    flex-direction: column;
-    width: 100%;
-  }
-  .navbar {
-    flex-direction: column;
-    text-align: center;
-  }
-}
+
 .wypozyczenia-tabela {
   width: 100%;
   border-collapse: collapse;
@@ -415,4 +405,78 @@ footer {
 
 .status-brak {
   color: var(--wine);
+}
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 60;
+}
+
+.hamburger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--parchment);
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.hamburger.aktywny span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.hamburger.aktywny span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.aktywny span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+@media (max-width: 800px) {
+  .hamburger {
+    display: flex;
+  }
+  .tableScroll {
+    overflow: auto;
+  }
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: min(280px, 75vw);
+    background: var(--walnut);
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 0;
+    padding: 5rem 1.5rem 2rem;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .nav-links.otwarte {
+    transform: translateX(0);
+  }
+
+  .nav-links li {
+    width: 100%;
+    border-bottom: 1px solid rgba(166, 121, 59, 0.2);
+  }
+
+  .nav-links li a {
+    display: block;
+    padding: 1rem 0;
+  }
 }

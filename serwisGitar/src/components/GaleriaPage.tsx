@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Navbar from "./Navbar";
-import AdminGaleriaComponent from "./AdminGaleriaComponent";
+import AdminComponent from "./AdminComponent";
 import "../styles/galeriaStyle.css";
 
 function GaleriaPage() {
@@ -28,7 +28,7 @@ function GaleriaPage() {
   return (
     <div className="luthier-page">
       <Navbar />
-      <AdminGaleriaComponent />
+      <AdminComponent />
       <section className="section galeria">
         <h2>Galeria zdjęć</h2>
         <p className="section-lead">

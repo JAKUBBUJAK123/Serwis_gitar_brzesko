@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import AdminPanel from "./AdminComponent";
+import type { Wypozyczenie } from "../types/Wypozyczenia";
 import "../styles/mainStyle.css";
 
 function WypozyczeniaPage() {
-  const [wypozyczenia, setWypozyczenia] = useState([]);
+  const [wypozyczenia, setWypozyczenia] = useState<Wypozyczenie[]>([]);
   const [ladowanie, setLadowanie] = useState(true);
   const [blad, setBlad] = useState(null);
 
@@ -39,41 +40,43 @@ function WypozyczeniaPage() {
           <p className="status-brak">Nie udało się pobrać danych: {blad}</p>
         )}
         {!ladowanie && !blad && (
-          <table className="wypozyczenia-tabela">
-            <thead>
-              <tr>
-                <th>Produkt</th>
-                <th></th>
-                <th>Dostępność</th>
-              </tr>
-            </thead>
-            <tbody>
-              {wypozyczenia.map((g) => (
-                <tr key={g.id}>
-                  <td>{g.nazwa}</td>
-                  <td>
-                    <img
-                      src={g.img}
-                      alt={g.nazwa}
-                      className="wypozyczenia-img"
-                    />
-                  </td>
-                  <td>
-                    <span
-                      className={
-                        "status-badge " +
-                        (g.dostepnosc === "Dostępna"
-                          ? "status-ok"
-                          : "status-brak")
-                      }
-                    >
-                      {g.dostepnosc}
-                    </span>
-                  </td>
+          <div className="tableScroll">
+            <table className="wypozyczenia-tabela">
+              <thead>
+                <tr>
+                  <th>Produkt</th>
+                  <th></th>
+                  <th>Dostępność</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {wypozyczenia.map((g) => (
+                  <tr key={g.id}>
+                    <td>{g.nazwa}</td>
+                    <td>
+                      <img
+                        src={g.img}
+                        alt={g.nazwa}
+                        className="wypozyczenia-img"
+                      />
+                    </td>
+                    <td>
+                      <span
+                        className={
+                          "status-badge " +
+                          (g.dostepnosc === "Dostępna"
+                            ? "status-ok"
+                            : "status-brak")
+                        }
+                      >
+                        {g.dostepnosc}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </section>
       <footer>© {new Date().getFullYear()} Gitarowy kącik</footer>
