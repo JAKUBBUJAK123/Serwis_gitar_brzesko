@@ -1,15 +1,17 @@
-import json
 import os
-from pathlib import Path
 import uuid
+from pathlib import Path
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
+from pymongo import MongoClient
+from dotenv import load_dotenv
+
+# Ładujemy zmienne środowiskowe z pliku .env
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "db.json"
 UPLOADS_DIR = BASE_DIR / "uploads"
 UPLOADS_DIR.mkdir(exist_ok=True)
-
 DOZWOLONE_ROZSZERZENIA = {"jpg", "jpeg", "png", "webp", "gif"}
 MAX_ROZMIAR_MB = 10
 
@@ -17,18 +19,22 @@ app = Flask(__name__)
 CORS(app)
 app.config["MAX_CONTENT_LENGTH"] = MAX_ROZMIAR_MB * 1024 * 1024
 
-def wczytaj_db():
-    with open(DB_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)
+# --- Konfiguracja MongoDB ---
+MONGODB_URI = os.getenv("MONGODB_URI")
+client = MongoClient(MONGODB_URI)
+db = client.get_default_database() # Pobiera bazę zdefiniowaną w linku MONGO_URI
 
-def zapisz_db(dane):
-    with open(DB_PATH, "w", encoding="utf-8") as f:
-        json.dump(dane, f, ensure_ascii=False, indent=2)
+
+def formatuj_dokument(doc):
+    """Usuwa wewnętrzne '_id' MongoDB, żeby nie psuć frontendu w Reactcie"""
+    if doc and "_id" in doc:
+        del doc["_id"]
+    return doc
 
 def rozszerzenie_dozwolone(nazwa_pliku):
     return "." in nazwa_pliku and nazwa_pliku.rsplit(".", 1)[1].lower() in DOZWOLONE_ROZSZERZENIA
 
-# --- serwowanie wgranych plików pod /uploads/nazwa.jpg ---
+# --- Serwowanie i wgrywanie plików (tymczasowo zostawione lokalnie) ---
 @app.route("/uploads/<nazwa_pliku>")
 def serwuj_plik(nazwa_pliku):
     return send_from_directory(UPLOADS_DIR, nazwa_pliku)
@@ -52,64 +58,72 @@ def upload():
     url = f"{request.host_url}uploads/{nowa_nazwa}"
     return jsonify({"url": url})
 
+
+# --- Dynamiczne generowanie endpointów z MongoDB ---
 def stworz_endpointy(nazwa_tabeli):
+    kolekcja = db[nazwa_tabeli]
+
     @app.route(f"/{nazwa_tabeli}", methods=["GET"], endpoint=f"get_{nazwa_tabeli}")
     def pobierz_wszystkie():
-        db = wczytaj_db()
-        return jsonify(db.get(nazwa_tabeli, []))
+        dane = list(kolekcja.find({}))
+        return jsonify([formatuj_dokument(doc) for doc in dane])
 
     @app.route(f"/{nazwa_tabeli}", methods=["POST"], endpoint=f"post_{nazwa_tabeli}")
     def dodaj():
-        db = wczytaj_db()
         nowy_wpis = {"id": str(uuid.uuid4()), **request.get_json()}
-        db[nazwa_tabeli].append(nowy_wpis)
-        zapisz_db(db)
+        # Kopiujemy słownik, bo insert_one modyfikuje go dodając '_id'
+        kolekcja.insert_one(nowy_wpis.copy())
         return jsonify(nowy_wpis), 201
 
     @app.route(f"/{nazwa_tabeli}/<id>", methods=["PUT"], endpoint=f"put_{nazwa_tabeli}")
     def edytuj(id):
-        db = wczytaj_db()
-        lista = db[nazwa_tabeli]
-        idx = next((i for i, el in enumerate(lista) if el["id"] == id), None)
-        if idx is None:
+        dane_update = request.get_json()
+        dane_update["id"] = id 
+        
+        wynik = kolekcja.find_one_and_update(
+            {"id": id},
+            {"$set": dane_update},
+            return_document=True
+        )
+        if not wynik:
             return jsonify({"blad": "Nie znaleziono"}), 404
-        lista[idx] = {**lista[idx], **request.get_json(), "id": id}
-        zapisz_db(db)
-        return jsonify(lista[idx])
+        return jsonify(formatuj_dokument(wynik))
 
     @app.route(f"/{nazwa_tabeli}/<id>", methods=["PATCH"], endpoint=f"patch_{nazwa_tabeli}")
     def edytuj_czesciowo(id):
-        db = wczytaj_db()
-        lista = db[nazwa_tabeli]
-        idx = next((i for i, el in enumerate(lista) if el["id"] == id), None)
-        if idx is None:
+        dane_update = request.get_json()
+        if "id" in dane_update:
+            del dane_update["id"] # Zabezpieczenie przed nadpisaniem ID
+            
+        wynik = kolekcja.find_one_and_update(
+            {"id": id},
+            {"$set": dane_update},
+            return_document=True
+        )
+        if not wynik:
             return jsonify({"blad": "Nie znaleziono"}), 404
-        lista[idx] = {**lista[idx], **request.get_json()}
-        zapisz_db(db)
-        return jsonify(lista[idx])
+        return jsonify(formatuj_dokument(wynik))
 
     @app.route(f"/{nazwa_tabeli}/<id>", methods=["DELETE"], endpoint=f"delete_{nazwa_tabeli}")
     def usun(id):
-        db = wczytaj_db()
-        lista = db[nazwa_tabeli]
-        wpis = next((el for el in lista if el["id"] == id), None)
-        db[nazwa_tabeli] = [el for el in lista if el["id"] != id]
-        zapisz_db(db)
+        wpis = kolekcja.find_one({"id": id})
+        if not wpis:
+            return "", 204
+            
+        kolekcja.delete_one({"id": id})
 
-        # jeśli wpis miał plik z /uploads, usuń go też z dysku
-        if wpis:
-            pole_pliku = wpis.get("img") or wpis.get("src") or ""
-            if "/uploads/" in pole_pliku:
-                nazwa_pliku = pole_pliku.split("/uploads/")[-1]
-                sciezka = UPLOADS_DIR / nazwa_pliku
-                sciezka.unlink(missing_ok=True)
+        # Jeśli wpis miał plik z /uploads, usuń go z lokalnego dysku
+        pole_pliku = wpis.get("img") or wpis.get("src") or ""
+        if "/uploads/" in pole_pliku:
+            nazwa_pliku = pole_pliku.split("/uploads/")[-1]
+            sciezka = UPLOADS_DIR / nazwa_pliku
+            sciezka.unlink(missing_ok=True)
 
         return "", 204
 
 
 stworz_endpointy("wypozyczenia")
 stworz_endpointy("galeria")
-
 
 if __name__ == "__main__":
     app.run(port=3001, debug=True)
