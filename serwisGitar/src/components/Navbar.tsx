@@ -12,7 +12,7 @@ function Navbar() {
     <nav className="navbar">
       <div className="brand">
         <div className="logo" aria-hidden="true">
-          <img src="./src/assets/imgs/guitar_logo.png" alt="Gitarowy kącik" />
+          <img src="/imgs/guitar_logo.png" alt="Gitarowy kącik" />
         </div>
         Gitarowy kącik
       </div>

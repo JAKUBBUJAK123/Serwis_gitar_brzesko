@@ -215,7 +215,7 @@ function PanelWypozyczenia() {
           type="file"
           accept="image/*"
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setPlik(e.target.files[0])
+            setPlik(e.target.files ? e.target.files[0] : null)
           }
           required={!edytowany}
         />
@@ -329,7 +329,7 @@ function PanelGaleria() {
           type="file"
           accept="image/*"
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setPlik(e.target.files[0])
+            setPlik(e.target.files ? e.target.files[0] : null)
           }
           required
         />

@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import AdminComponent from "./AdminComponent";
 import "../styles/galeriaStyle.css";
+import type { Zdjecie } from "../types/Zdjecia";
 
 function GaleriaPage() {
   const [zdjecia, setZdjecia] = useState([]);
   const [ladowanie, setLadowanie] = useState(true);
   const [blad, setBlad] = useState(null);
-  const [podglad, setPodglad] = useState(null);
+  const [podglad, setPodglad] = useState<Zdjecie | null>(null);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/galeria`)
@@ -42,7 +43,7 @@ function GaleriaPage() {
 
         {!ladowanie && !blad && (
           <div className="galeria-grid">
-            {zdjecia.map((z) => (
+            {zdjecia.map((z: Zdjecie) => (
               <button
                 key={z.id}
                 className="galeria-kafelek"

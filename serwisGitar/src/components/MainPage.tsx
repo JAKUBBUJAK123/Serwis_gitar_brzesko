@@ -8,14 +8,14 @@ const PRODUKTY = [
   {
     id: 1,
     nazwa: "Wypożyczenie gitar",
-    img: "./src/assets/imgs/Jolana.jpg",
+    img: "/imgs/Jolana.jpg",
     opis: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     link: "/wypozyczenia",
   },
   {
     id: 2,
     nazwa: "Sprzedaż gitar i akcesoriów",
-    img: "./src/assets/imgs/blackRR.jpg",
+    img: "/imgs/blackRR.jpg",
     opis: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     link: "/",
   },
@@ -83,7 +83,7 @@ function MainPage() {
             </p>
           </div>
           <div className="zdjecie">
-            <img src="./src/assets/imgs/guitar1.jpg" alt="gitara" />
+            <img src="/imgs/guitar1.jpg" alt="gitara" />
           </div>
         </section>
 

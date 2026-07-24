@@ -55,7 +55,8 @@ def upload():
     nowa_nazwa = f"{uuid.uuid4()}.{rozszerzenie}"
     plik.save(UPLOADS_DIR / nowa_nazwa)
 
-    url = f"{request.host_url}uploads/{nowa_nazwa}"
+    base_url = os.getenv("BACKEND_URL") or request.host_url.rstrip("/")
+    url = f"{base_url}/uploads/{nowa_nazwa}"
     return jsonify({"url": url})
 
 
