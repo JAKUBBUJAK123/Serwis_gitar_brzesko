@@ -1,17 +1,25 @@
 import os
 import uuid
 from pathlib import Path
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from pymongo import MongoClient
 from dotenv import load_dotenv
+import cloudinary
+import cloudinary.uploader
 
 # Ładujemy zmienne środowiskowe z pliku .env
 load_dotenv()
 
+# --- Konfiguracja Cloudinary ---
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True
+)
+
 BASE_DIR = Path(__file__).resolve().parent
-UPLOADS_DIR = BASE_DIR / "uploads"
-UPLOADS_DIR.mkdir(exist_ok=True)
 DOZWOLONE_ROZSZERZENIA = {"jpg", "jpeg", "png", "webp", "gif"}
 MAX_ROZMIAR_MB = 10
 
@@ -34,11 +42,8 @@ def formatuj_dokument(doc):
 def rozszerzenie_dozwolone(nazwa_pliku):
     return "." in nazwa_pliku and nazwa_pliku.rsplit(".", 1)[1].lower() in DOZWOLONE_ROZSZERZENIA
 
-# --- Serwowanie i wgrywanie plików (tymczasowo zostawione lokalnie) ---
-@app.route("/uploads/<nazwa_pliku>")
-def serwuj_plik(nazwa_pliku):
-    return send_from_directory(UPLOADS_DIR, nazwa_pliku)
 
+# --- Wgrywanie plików do Cloudinary ---
 @app.route("/upload", methods=["POST"])
 def upload():
     if "plik" not in request.files:
@@ -51,13 +56,17 @@ def upload():
     if not rozszerzenie_dozwolone(plik.filename):
         return jsonify({"blad": "Niedozwolony format pliku"}), 400
 
-    rozszerzenie = plik.filename.rsplit(".", 1)[1].lower()
-    nowa_nazwa = f"{uuid.uuid4()}.{rozszerzenie}"
-    plik.save(UPLOADS_DIR / nowa_nazwa)
-
-    base_url = os.getenv("BACKEND_URL") or request.host_url.rstrip("/")
-    url = f"{base_url}/uploads/{nowa_nazwa}"
-    return jsonify({"url": url})
+    try:
+        wynik_uploadu = cloudinary.uploader.upload(
+            plik,
+            folder="app_uploads"
+        )
+        
+        secure_url = wynik_uploadu.get("secure_url")
+        return jsonify({"url": secure_url})
+        
+    except Exception as e:
+        return jsonify({"blad": str(e)}), 500
 
 
 # --- Dynamiczne generowanie endpointów z MongoDB ---
@@ -72,7 +81,6 @@ def stworz_endpointy(nazwa_tabeli):
     @app.route(f"/{nazwa_tabeli}", methods=["POST"], endpoint=f"post_{nazwa_tabeli}")
     def dodaj():
         nowy_wpis = {"id": str(uuid.uuid4()), **request.get_json()}
-        # Kopiujemy słownik, bo insert_one modyfikuje go dodając '_id'
         kolekcja.insert_one(nowy_wpis.copy())
         return jsonify(nowy_wpis), 201
 
@@ -94,7 +102,7 @@ def stworz_endpointy(nazwa_tabeli):
     def edytuj_czesciowo(id):
         dane_update = request.get_json()
         if "id" in dane_update:
-            del dane_update["id"] # Zabezpieczenie przed nadpisaniem ID
+            del dane_update["id"]
             
         wynik = kolekcja.find_one_and_update(
             {"id": id},
@@ -113,12 +121,8 @@ def stworz_endpointy(nazwa_tabeli):
             
         kolekcja.delete_one({"id": id})
 
-        # Jeśli wpis miał plik z /uploads, usuń go z lokalnego dysku
-        pole_pliku = wpis.get("img") or wpis.get("src") or ""
-        if "/uploads/" in pole_pliku:
-            nazwa_pliku = pole_pliku.split("/uploads/")[-1]
-            sciezka = UPLOADS_DIR / nazwa_pliku
-            sciezka.unlink(missing_ok=True)
+        # Opcjonalnie: Jeśli chcesz usuwać plik również z Cloudinary przy usuwaniu dokumentu z bazy, 
+        # można tutaj dodać logikę wyciągającą Public ID i używającą cloudinary.uploader.destroy().
 
         return "", 204
 
