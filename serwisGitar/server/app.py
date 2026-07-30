@@ -126,6 +126,10 @@ def stworz_endpointy(nazwa_tabeli):
 
         return "", 204
 
+    @app.route("/ping", methods=["GET"])
+    def ping():
+        return jsonify({"status": "aktywny"}), 200
+
 
 stworz_endpointy("wypozyczenia")
 stworz_endpointy("galeria")
