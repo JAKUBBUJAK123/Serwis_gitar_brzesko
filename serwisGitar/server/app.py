@@ -43,6 +43,10 @@ def rozszerzenie_dozwolone(nazwa_pliku):
     return "." in nazwa_pliku and nazwa_pliku.rsplit(".", 1)[1].lower() in DOZWOLONE_ROZSZERZENIA
 
 
+@app.route("/ping", methods=["GET"])
+def ping():
+    return jsonify({"status": "aktywny"}), 200
+
 # --- Wgrywanie plików do Cloudinary ---
 @app.route("/upload", methods=["POST"])
 def upload():
@@ -125,10 +129,6 @@ def stworz_endpointy(nazwa_tabeli):
         # można tutaj dodać logikę wyciągającą Public ID i używającą cloudinary.uploader.destroy().
 
         return "", 204
-
-    @app.route("/ping", methods=["GET"])
-    def ping():
-        return jsonify({"status": "aktywny"}), 200
 
 
 stworz_endpointy("wypozyczenia")
