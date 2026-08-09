@@ -3,4 +3,5 @@ export interface Wypozyczenie {
   nazwa: string;
   dostepnosc: "Dostępna" | "Wypożyczona";
   img: string;
+  opis?: string;
 }

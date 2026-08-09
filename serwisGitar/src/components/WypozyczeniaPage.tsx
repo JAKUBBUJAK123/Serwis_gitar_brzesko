@@ -8,6 +8,7 @@ function WypozyczeniaPage() {
   const [wypozyczenia, setWypozyczenia] = useState<Wypozyczenie[]>([]);
   const [ladowanie, setLadowanie] = useState(true);
   const [blad, setBlad] = useState(null);
+  const [wybrany, setWybrany] = useState<Wypozyczenie | null>(null);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/wypozyczenia`)
@@ -24,6 +25,15 @@ function WypozyczeniaPage() {
         setLadowanie(false);
       });
   }, []);
+
+  useEffect(() => {
+    if (!wybrany) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setWybrany(null);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [wybrany]);
 
   return (
     <div className="luthier-page">
@@ -51,7 +61,11 @@ function WypozyczeniaPage() {
               </thead>
               <tbody>
                 {wypozyczenia.map((g) => (
-                  <tr key={g.id}>
+                  <tr
+                    key={g.id}
+                    onClick={() => setWybrany(g)}
+                    className="wypozyczenia-row"
+                  >
                     <td>{g.nazwa}</td>
                     <td>
                       <img
@@ -79,6 +93,38 @@ function WypozyczeniaPage() {
           </div>
         )}
       </section>
+
+      {wybrany && (
+        <div className="modal-overlay" onClick={() => setWybrany(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="modal-close"
+              onClick={() => setWybrany(null)}
+              aria-label="Zamknij"
+            >
+              ×
+            </button>
+            <img src={wybrany.img} alt={wybrany.nazwa} className="modal-img" />
+            <div className="modal-body">
+              <h3>{wybrany.nazwa}</h3>
+              <span
+                className={
+                  "status-badge " +
+                  (wybrany.dostepnosc === "Dostępna"
+                    ? "status-ok"
+                    : "status-brak")
+                }
+              >
+                {wybrany.dostepnosc}
+              </span>
+              <p className="modal-opis">
+                {wybrany.opis || "Brak opisu dla tego produktu."}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <footer>© {new Date().getFullYear()} Gitarowy kącik</footer>
     </div>
   );
