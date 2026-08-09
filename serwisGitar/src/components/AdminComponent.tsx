@@ -124,6 +124,7 @@ function PanelWypozyczenia() {
   const [nazwa, setNazwa] = useState("");
   const [dostepnosc, setDostepnosc] = useState("Dostępna");
   const [plik, setPlik] = useState<File | null>(null);
+  const [opis, setOpis] = useState("");
   const [wysylanie, setWysylanie] = useState(false);
 
   useEffect(() => {
@@ -142,6 +143,7 @@ function PanelWypozyczenia() {
     setEdytowany(null);
     setNazwa("");
     setDostepnosc("Dostępna");
+    setOpis("");
     setPlik(null);
   }
 
@@ -149,6 +151,7 @@ function PanelWypozyczenia() {
     setEdytowany(produkt);
     setNazwa(produkt.nazwa);
     setDostepnosc(produkt.dostepnosc);
+    setOpis(produkt.opis || "");
     setPlik(null);
   }
 
@@ -157,7 +160,7 @@ function PanelWypozyczenia() {
     setWysylanie(true);
     try {
       let img = edytowany?.img;
-      if (plik) img = await wgrajPlik(plik); // nowy plik nadpisuje stary URL
+      if (plik) img = await wgrajPlik(plik);
 
       const metoda = edytowany ? "PUT" : "POST";
       const url = edytowany
@@ -167,7 +170,7 @@ function PanelWypozyczenia() {
       const res = await fetch(url, {
         method: metoda,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nazwa, dostepnosc, img }),
+        body: JSON.stringify({ nazwa, dostepnosc, img, opis }),
       });
       if (!res.ok) throw new Error();
       resetFormularza();
@@ -211,6 +214,12 @@ function PanelWypozyczenia() {
           <option value="Dostępna">Dostępna</option>
           <option value="Wypożyczona">Wypożyczona</option>
         </select>
+        <textarea
+          placeholder="Opis produktu"
+          value={opis}
+          onChange={(e) => setOpis(e.target.value)}
+          rows={3}
+        />
         <input
           type="file"
           accept="image/*"

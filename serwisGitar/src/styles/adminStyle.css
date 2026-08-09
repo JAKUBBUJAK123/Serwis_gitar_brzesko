@@ -14,7 +14,9 @@
   padding: 2rem;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
-
+.admin-formularz textarea {
+  width: 100%;
+}
 .admin-login {
   width: 320px;
 }
