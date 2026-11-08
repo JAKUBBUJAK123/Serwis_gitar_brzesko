@@ -3,6 +3,7 @@ import Navbar from "./Navbar";
 import AdminComponent from "./AdminComponent";
 import "../styles/galeriaStyle.css";
 import { pobierzZdjeciaObiektu, type Zdjecie } from "../types/Zdjecia";
+import { apiFetch } from "../utils/api";
 
 function GaleriaPage() {
   const [zdjecia, setZdjecia] = useState<Zdjecie[]>([]);
@@ -13,7 +14,7 @@ function GaleriaPage() {
 
   const pobierzGalerie = useCallback(() => {
     setLadowanie(true);
-    fetch(`${import.meta.env.VITE_API_URL}/galeria`)
+    apiFetch("/galeria")
       .then((res) => {
         if (!res.ok) throw new Error("Błąd pobierania danych");
         return res.json();

@@ -5,6 +5,7 @@ import {
   pobierzZdjeciaWypozyczenia,
   type Wypozyczenie,
 } from "../types/Wypozyczenia";
+import { apiFetch } from "../utils/api";
 import "../styles/mainStyle.css";
 
 function WypozyczeniaPage() {
@@ -19,7 +20,7 @@ function WypozyczeniaPage() {
 
   const pobierzDane = useCallback(() => {
     setLadowanie(true);
-    fetch(`${import.meta.env.VITE_API_URL}/wypozyczenia`)
+    apiFetch("/wypozyczenia")
       .then((res) => {
         if (!res.ok) throw new Error("Błąd pobierania danych");
         return res.json();
