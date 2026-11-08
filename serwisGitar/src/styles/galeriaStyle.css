@@ -5,13 +5,15 @@
 }
 
 .galeria-kafelek {
-  position: relative;
+  width: 260px;
   border: 1px solid var(--brass);
-  padding: 0;
-  background: #fff8ea;
   cursor: pointer;
-  overflow: hidden;
   aspect-ratio: 4 / 3;
+  border-radius: 5px;
+  background: #fff8ea;
+  padding: 1rem;
+  position: relative;
+  overflow: hidden;
 }
 
 .galeria-kafelek img {
@@ -68,16 +70,14 @@
 }
 
 .galeria-lightbox {
+  z-index: 1000;
+  background: #000000bf;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  display: flex;
   position: fixed;
   inset: 0;
-  background: rgba(20, 13, 8, 0.92);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  z-index: 200;
-  cursor: zoom-out;
 }
 
 .galeria-lightbox-content {

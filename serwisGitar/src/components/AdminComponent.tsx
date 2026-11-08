@@ -5,9 +5,9 @@ import {
   type Wypozyczenie,
 } from "../types/Wypozyczenia";
 import { pobierzZdjeciaObiektu, type Zdjecie } from "../types/Zdjecia";
+import { apiFetch } from "../utils/api";
 
 const ADMIN_HASLO = import.meta.env.VITE_ADMIN_HASLO || "gitara123";
-const API_URL = import.meta.env.VITE_API_URL;
 
 function AdminPanel() {
   const [pokazLogowanie, setPokazLogowanie] = useState(false);
@@ -31,6 +31,7 @@ function AdminPanel() {
   function handleLogowanie(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (haslo === ADMIN_HASLO) {
+      sessionStorage.setItem("admin_token", haslo);
       setZalogowany(true);
       setPokazLogowanie(false);
       setHaslo("");
@@ -41,6 +42,7 @@ function AdminPanel() {
   }
 
   function zamknij() {
+    sessionStorage.removeItem("admin_token");
     setPokazLogowanie(false);
     setZalogowany(false);
   }
@@ -114,7 +116,7 @@ function AdminPanel() {
 async function wgrajPlik(plik: File): Promise<string> {
   const dane = new FormData();
   dane.append("plik", plik);
-  const res = await fetch(`${API_URL}/upload`, { method: "POST", body: dane });
+  const res = await apiFetch("/upload", { method: "POST", body: dane });
   if (!res.ok) throw new Error("Błąd uploadu pliku");
   const wynik = await res.json();
   return wynik.url;
@@ -137,7 +139,7 @@ function PanelWypozyczenia() {
 
   function pobierz(powiadomStrone = false) {
     setLadowanie(true);
-    fetch(`${API_URL}/wypozyczenia`)
+    apiFetch("/wypozyczenia")
       .then((res) => res.json())
       .then((dane) => {
         setProdukty(dane);
@@ -195,11 +197,11 @@ function PanelWypozyczenia() {
       const wszystkieZdjecia = [...obecneZdjecia, ...noweLinki];
 
       const metoda = edytowany ? "PUT" : "POST";
-      const url = edytowany
-        ? `${API_URL}/wypozyczenia/${edytowany.id}`
-        : `${API_URL}/wypozyczenia`;
+      const sciezka = edytowany
+        ? `/wypozyczenia/${edytowany.id}`
+        : `/wypozyczenia`;
 
-      const res = await fetch(url, {
+      const res = await apiFetch(sciezka, {
         method: metoda,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -222,7 +224,7 @@ function PanelWypozyczenia() {
 
   function handleUsun(id: string) {
     if (!confirm("Na pewno usunąć ten produkt?")) return;
-    fetch(`${API_URL}/wypozyczenia/${id}`, { method: "DELETE" }).then(() =>
+    apiFetch(`/wypozyczenia/${id}`, { method: "DELETE" }).then(() =>
       pobierz(true),
     );
   }
@@ -230,7 +232,7 @@ function PanelWypozyczenia() {
   function handleZmienStatus(produkt: Wypozyczenie) {
     const nowyStatus =
       produkt.dostepnosc === "Dostępna" ? "Wypożyczona" : "Dostępna";
-    fetch(`${API_URL}/wypozyczenia/${produkt.id}`, {
+    apiFetch(`/wypozyczenia/${produkt.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ dostepnosc: nowyStatus }),
@@ -370,7 +372,7 @@ function PanelGaleria() {
 
   function pobierz(powiadomStrone = false) {
     setLadowanie(true);
-    fetch(`${API_URL}/galeria`)
+    apiFetch("/galeria")
       .then((res) => res.json())
       .then((dane) => {
         setZdjecia(dane);
@@ -424,11 +426,9 @@ function PanelGaleria() {
       const wszystkieZdjecia = [...obecneZdjecia, ...noweLinki];
 
       const metoda = edytowany ? "PUT" : "POST";
-      const url = edytowany
-        ? `${API_URL}/galeria/${edytowany.id}`
-        : `${API_URL}/galeria`;
+      const sciezka = edytowany ? `/galeria/${edytowany.id}` : `/galeria`;
 
-      const res = await fetch(url, {
+      const res = await apiFetch(sciezka, {
         method: metoda,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -449,7 +449,7 @@ function PanelGaleria() {
 
   function handleUsun(id: string) {
     if (!confirm("Na pewno usunąć ten obiekt?")) return;
-    fetch(`${API_URL}/galeria/${id}`, { method: "DELETE" }).then(() =>
+    apiFetch(`/galeria/${id}`, { method: "DELETE" }).then(() =>
       pobierz(true),
     );
   }

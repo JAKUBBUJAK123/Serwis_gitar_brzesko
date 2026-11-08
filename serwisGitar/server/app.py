@@ -24,8 +24,32 @@ DOZWOLONE_ROZSZERZENIA = {"jpg", "jpeg", "png", "webp", "gif"}
 MAX_ROZMIAR_MB = 10
 
 app = Flask(__name__)
-CORS(app)
+CORS(
+    app,
+    resources={r"/*": {"origins": "*"}},
+    allow_headers=["Content-Type", "X-App-Token", "X-Admin-Token"],
+)
 app.config["MAX_CONTENT_LENGTH"] = MAX_ROZMIAR_MB * 1024 * 1024
+
+API_SECRET_TOKEN = os.getenv("API_SECRET_TOKEN")
+ADMIN_HASLO = os.getenv("ADMIN_HASLO")
+
+
+@app.before_request
+def sprawdz_autoryzacje():
+    if request.method == "OPTIONS" or request.path == "/ping":
+        return None
+
+    token_aplikacji = request.headers.get("X-App-Token")
+    if token_aplikacji != API_SECRET_TOKEN:
+        return jsonify({"blad": "Brak autoryzacji aplikacji (nieprawidłowy X-App-Token)"}), 401
+
+    if request.method in {"POST", "PUT", "PATCH", "DELETE"}:
+        token_admina = request.headers.get("X-Admin-Token")
+        if token_admina != ADMIN_HASLO:
+            return jsonify({"blad": "Brak uprawnień administratora (nieprawidłowy X-Admin-Token)"}), 403
+
+    return None
 
 # --- Konfiguracja MongoDB ---
 MONGODB_URI = os.getenv("MONGODB_URI")
