@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "../styles/adminStyle.css";
 import type { Wypozyczenie } from "../types/Wypozyczenia";
-import type { Zdjecie } from "../types/Zdjecia";
+import { pobierzZdjeciaObiektu, type Zdjecie } from "../types/Zdjecia";
 
 const ADMIN_HASLO = import.meta.env.VITE_ADMIN_HASLO || "gitara123";
 const API_URL = import.meta.env.VITE_API_URL;
@@ -272,37 +272,88 @@ function PanelWypozyczenia() {
 function PanelGaleria() {
   const [zdjecia, setZdjecia] = useState<Zdjecie[]>([]);
   const [ladowanie, setLadowanie] = useState(false);
+  const [edytowany, setEdytowany] = useState<Zdjecie | null>(null);
   const [opis, setOpis] = useState("");
-  const [plik, setPlik] = useState<File | null>(null);
+  const [obecneZdjecia, setObecneZdjecia] = useState<string[]>([]);
+  const [pliki, setPliki] = useState<File[]>([]);
   const [wysylanie, setWysylanie] = useState(false);
 
   useEffect(() => {
     pobierz();
   }, []);
 
-  function pobierz() {
+  function pobierz(powiadomStrone = false) {
     setLadowanie(true);
     fetch(`${API_URL}/galeria`)
       .then((res) => res.json())
-      .then(setZdjecia)
+      .then((dane) => {
+        setZdjecia(dane);
+        if (powiadomStrone) {
+          window.dispatchEvent(
+            new CustomEvent("galeria-zmieniona", { detail: dane }),
+          );
+        }
+      })
       .finally(() => setLadowanie(false));
   }
 
-  async function handleDodaj(e: React.FormEvent<HTMLFormElement>) {
+  function resetFormularza() {
+    setEdytowany(null);
+    setOpis("");
+    setObecneZdjecia([]);
+    setPliki([]);
+  }
+
+  function handleEdytuj(obiekt: Zdjecie) {
+    setEdytowany(obiekt);
+    setOpis(obiekt.opis);
+    setObecneZdjecia(pobierzZdjeciaObiektu(obiekt));
+    setPliki([]);
+  }
+
+  function handleWybierzPliki(e: React.ChangeEvent<HTMLInputElement>) {
+    if (!e.target.files) return;
+    const nowePliki = Array.from(e.target.files);
+    setPliki((prev) => [...prev, ...nowePliki]);
+    e.target.value = "";
+  }
+
+  function usunNowyPlik(index: number) {
+    setPliki((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function usunObecneZdjecie(index: number) {
+    setObecneZdjecia((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  async function handleZapisz(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!plik) return;
+    if (obecneZdjecia.length === 0 && pliki.length === 0) {
+      alert("Dodaj przynajmniej jedno zdjęcie do obiektu.");
+      return;
+    }
     setWysylanie(true);
     try {
-      const src = await wgrajPlik(plik);
-      const res = await fetch(`${API_URL}/galeria`, {
-        method: "POST",
+      const noweLinki = await Promise.all(pliki.map((plik) => wgrajPlik(plik)));
+      const wszystkieZdjecia = [...obecneZdjecia, ...noweLinki];
+
+      const metoda = edytowany ? "PUT" : "POST";
+      const url = edytowany
+        ? `${API_URL}/galeria/${edytowany.id}`
+        : `${API_URL}/galeria`;
+
+      const res = await fetch(url, {
+        method: metoda,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ opis, src }),
+        body: JSON.stringify({
+          opis,
+          src: wszystkieZdjecia[0],
+          zdjecia: wszystkieZdjecia,
+        }),
       });
       if (!res.ok) throw new Error();
-      setOpis("");
-      setPlik(null);
-      pobierz();
+      resetFormularza();
+      pobierz(true);
     } catch {
       alert("Nie udało się dodać zdjęcia");
     } finally {
@@ -311,16 +362,18 @@ function PanelGaleria() {
   }
 
   function handleUsun(id: string) {
-    if (!confirm("Na pewno usunąć to zdjęcie?")) return;
-    fetch(`${API_URL}/galeria/${id}`, { method: "DELETE" }).then(pobierz);
+    if (!confirm("Na pewno usunąć ten obiekt?")) return;
+    fetch(`${API_URL}/galeria/${id}`, { method: "DELETE" }).then(() =>
+      pobierz(true),
+    );
   }
 
   return (
     <>
-      <form className="admin-formularz" onSubmit={handleDodaj}>
+      <form className="admin-formularz" onSubmit={handleZapisz}>
         <input
           type="text"
-          placeholder="Opis zdjęcia"
+          placeholder="Opis obiektu"
           value={opis}
           onChange={(e) => setOpis(e.target.value)}
           required
@@ -328,29 +381,83 @@ function PanelGaleria() {
         <input
           type="file"
           accept="image/*"
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setPlik(e.target.files ? e.target.files[0] : null)
-          }
-          required
+          multiple
+          onChange={handleWybierzPliki}
         />
         <button type="submit" disabled={wysylanie}>
-          {wysylanie ? "Wgrywanie..." : "Dodaj zdjęcie"}
+          {wysylanie
+            ? "Wgrywanie..."
+            : edytowany
+              ? "Zapisz zmiany"
+              : "Dodaj obiekt"}
         </button>
+        {edytowany && (
+          <button type="button" onClick={resetFormularza}>
+            Anuluj edycję
+          </button>
+        )}
+
+        {(obecneZdjecia.length > 0 || pliki.length > 0) && (
+          <div className="admin-zalaczniki-lista">
+            {obecneZdjecia.map((url, idx) => (
+              <div className="admin-zalacznik-item" key={`obecne-${idx}`}>
+                <img src={url} alt={`Zdjęcie ${idx + 1}`} />
+                <button
+                  type="button"
+                  title="Usuń to zdjęcie"
+                  onClick={() => usunObecneZdjecie(idx)}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+            {pliki.map((plik, idx) => (
+              <div className="admin-zalacznik-item nowy" key={`nowy-${idx}`}>
+                <span className="admin-zalacznik-nazwa" title={plik.name}>
+                  + {plik.name}
+                </span>
+                <button
+                  type="button"
+                  title="Usuń załącznik"
+                  onClick={() => usunNowyPlik(idx)}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </form>
 
       {ladowanie ? (
         <p>Ładowanie...</p>
       ) : (
         <div className="admin-galeria-grid">
-          {zdjecia.map((z) => (
-            <div className="admin-galeria-kafelek" key={z.id}>
-              <img src={z.src} alt={z.opis} />
-              <div className="admin-galeria-opis">
-                <p>{z.opis}</p>
+          {zdjecia.map((z) => {
+            const lista = pobierzZdjeciaObiektu(z);
+            const okladka = lista[0] || "";
+            return (
+              <div className="admin-galeria-kafelek" key={z.id}>
+                <div className="admin-galeria-miniatura-wrap">
+                  <img src={okladka} alt={z.opis} />
+                  <span className="admin-galeria-licznik">
+                    {lista.length} zdj.
+                  </span>
+                </div>
+                <div className="admin-galeria-opis">
+                  <p>{z.opis}</p>
+                </div>
+                <div className="admin-galeria-akcje">
+                  <button type="button" onClick={() => handleEdytuj(z)}>
+                    Edytuj
+                  </button>
+                  <button type="button" onClick={() => handleUsun(z.id)}>
+                    Usuń
+                  </button>
+                </div>
               </div>
-              <button onClick={() => handleUsun(z.id)}>Usuń</button>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </>

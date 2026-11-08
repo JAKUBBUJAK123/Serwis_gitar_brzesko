@@ -168,19 +168,28 @@
 
 .admin-galeria-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 1rem;
 }
+
 .admin-galeria-opis {
   overflow-y: auto;
-  max-height: 130px;
+  max-height: 110px;
 }
+
 .admin-galeria-kafelek {
   border: 1px solid var(--parchment-dark);
   padding: 0.5rem;
   text-align: center;
   font-size: 0.85rem;
-  max-height: 300px;
+  max-height: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.admin-galeria-miniatura-wrap {
+  position: relative;
 }
 
 .admin-galeria-kafelek img {
@@ -188,13 +197,71 @@
   height: 100px;
   object-fit: cover;
   margin-bottom: 0.4rem;
+  display: block;
+}
+
+.admin-galeria-licznik {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(43, 29, 20, 0.85);
+  color: var(--parchment);
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.admin-galeria-akcje {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
 }
 
 .admin-galeria-kafelek button {
-  margin-top: 0.4rem;
   border: 1px solid var(--wine);
   background: none;
   color: var(--wine);
   padding: 0.2rem 0.6rem;
   cursor: pointer;
+}
+
+.admin-zalaczniki-lista {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.admin-zalacznik-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid var(--brass);
+  background: #fff8ea;
+  padding: 0.25rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.admin-zalacznik-item img {
+  width: 48px;
+  height: 36px;
+  object-fit: cover;
+  display: block;
+}
+
+.admin-zalacznik-nazwa {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-zalacznik-item button {
+  padding: 0 4px;
+  font-size: 0.75rem;
+  line-height: 1.2;
 }

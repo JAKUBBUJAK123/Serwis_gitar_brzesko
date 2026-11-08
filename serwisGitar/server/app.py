@@ -37,6 +37,12 @@ def formatuj_dokument(doc):
     """Usuwa wewnętrzne '_id' MongoDB, żeby nie psuć frontendu w Reactcie"""
     if doc and "_id" in doc:
         del doc["_id"]
+    if doc:
+        if "zdjecia" in doc and isinstance(doc["zdjecia"], list) and len(doc["zdjecia"]) > 0:
+            if "src" not in doc or not doc["src"]:
+                doc["src"] = doc["zdjecia"][0]
+        elif "src" in doc and isinstance(doc["src"], str) and doc["src"]:
+            doc["zdjecia"] = [doc["src"]]
     return doc
 
 def rozszerzenie_dozwolone(nazwa_pliku):
