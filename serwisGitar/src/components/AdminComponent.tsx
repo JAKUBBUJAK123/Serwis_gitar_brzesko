@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import "../styles/adminStyle.css";
-import type { Wypozyczenie } from "../types/Wypozyczenia";
+import {
+  pobierzZdjeciaWypozyczenia,
+  type Wypozyczenie,
+} from "../types/Wypozyczenia";
 import { pobierzZdjeciaObiektu, type Zdjecie } from "../types/Zdjecia";
 
 const ADMIN_HASLO = import.meta.env.VITE_ADMIN_HASLO || "gitara123";
@@ -123,7 +126,8 @@ function PanelWypozyczenia() {
   const [edytowany, setEdytowany] = useState<Wypozyczenie | null>(null);
   const [nazwa, setNazwa] = useState("");
   const [dostepnosc, setDostepnosc] = useState("Dostępna");
-  const [plik, setPlik] = useState<File | null>(null);
+  const [obecneZdjecia, setObecneZdjecia] = useState<string[]>([]);
+  const [pliki, setPliki] = useState<File[]>([]);
   const [opis, setOpis] = useState("");
   const [wysylanie, setWysylanie] = useState(false);
 
@@ -131,11 +135,18 @@ function PanelWypozyczenia() {
     pobierz();
   }, []);
 
-  function pobierz() {
+  function pobierz(powiadomStrone = false) {
     setLadowanie(true);
     fetch(`${API_URL}/wypozyczenia`)
       .then((res) => res.json())
-      .then(setProdukty)
+      .then((dane) => {
+        setProdukty(dane);
+        if (powiadomStrone) {
+          window.dispatchEvent(
+            new CustomEvent("wypozyczenia-zmienione", { detail: dane }),
+          );
+        }
+      })
       .finally(() => setLadowanie(false));
   }
 
@@ -144,7 +155,8 @@ function PanelWypozyczenia() {
     setNazwa("");
     setDostepnosc("Dostępna");
     setOpis("");
-    setPlik(null);
+    setObecneZdjecia([]);
+    setPliki([]);
   }
 
   function handleEdytuj(produkt: Wypozyczenie) {
@@ -152,15 +164,35 @@ function PanelWypozyczenia() {
     setNazwa(produkt.nazwa);
     setDostepnosc(produkt.dostepnosc);
     setOpis(produkt.opis || "");
-    setPlik(null);
+    setObecneZdjecia(pobierzZdjeciaWypozyczenia(produkt));
+    setPliki([]);
+  }
+
+  function handleWybierzPliki(e: React.ChangeEvent<HTMLInputElement>) {
+    if (!e.target.files) return;
+    const nowePliki = Array.from(e.target.files);
+    setPliki((prev) => [...prev, ...nowePliki]);
+    e.target.value = "";
+  }
+
+  function usunNowyPlik(index: number) {
+    setPliki((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function usunObecneZdjecie(index: number) {
+    setObecneZdjecia((prev) => prev.filter((_, i) => i !== index));
   }
 
   async function handleZapisz(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (obecneZdjecia.length === 0 && pliki.length === 0) {
+      alert("Dodaj przynajmniej jedno zdjęcie produktu.");
+      return;
+    }
     setWysylanie(true);
     try {
-      let img = edytowany?.img;
-      if (plik) img = await wgrajPlik(plik);
+      const noweLinki = await Promise.all(pliki.map((plik) => wgrajPlik(plik)));
+      const wszystkieZdjecia = [...obecneZdjecia, ...noweLinki];
 
       const metoda = edytowany ? "PUT" : "POST";
       const url = edytowany
@@ -170,11 +202,17 @@ function PanelWypozyczenia() {
       const res = await fetch(url, {
         method: metoda,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nazwa, dostepnosc, img, opis }),
+        body: JSON.stringify({
+          nazwa,
+          dostepnosc,
+          opis,
+          img: wszystkieZdjecia[0],
+          zdjecia: wszystkieZdjecia,
+        }),
       });
       if (!res.ok) throw new Error();
       resetFormularza();
-      pobierz();
+      pobierz(true);
     } catch {
       alert("Nie udało się zapisać zmian");
     } finally {
@@ -184,7 +222,9 @@ function PanelWypozyczenia() {
 
   function handleUsun(id: string) {
     if (!confirm("Na pewno usunąć ten produkt?")) return;
-    fetch(`${API_URL}/wypozyczenia/${id}`, { method: "DELETE" }).then(pobierz);
+    fetch(`${API_URL}/wypozyczenia/${id}`, { method: "DELETE" }).then(() =>
+      pobierz(true),
+    );
   }
 
   function handleZmienStatus(produkt: Wypozyczenie) {
@@ -194,7 +234,7 @@ function PanelWypozyczenia() {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ dostepnosc: nowyStatus }),
-    }).then(pobierz);
+    }).then(() => pobierz(true));
   }
 
   return (
@@ -223,10 +263,8 @@ function PanelWypozyczenia() {
         <input
           type="file"
           accept="image/*"
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setPlik(e.target.files ? e.target.files[0] : null)
-          }
-          required={!edytowany}
+          multiple
+          onChange={handleWybierzPliki}
         />
         <button type="submit" disabled={wysylanie}>
           {wysylanie
@@ -240,6 +278,40 @@ function PanelWypozyczenia() {
             Anuluj edycję
           </button>
         )}
+
+        {(obecneZdjecia.length > 0 || pliki.length > 0) && (
+          <div className="admin-zalaczniki-lista">
+            {obecneZdjecia.map((url, idx) => (
+              <div className="admin-zalacznik-item" key={`obecne-wyp-${idx}`}>
+                <img src={url} alt={`Zdjęcie ${idx + 1}`} />
+                <button
+                  type="button"
+                  title="Usuń to zdjęcie"
+                  onClick={() => usunObecneZdjecie(idx)}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+            {pliki.map((plik, idx) => (
+              <div
+                className="admin-zalacznik-item nowy"
+                key={`nowy-wyp-${idx}`}
+              >
+                <span className="admin-zalacznik-nazwa" title={plik.name}>
+                  + {plik.name}
+                </span>
+                <button
+                  type="button"
+                  title="Usuń załącznik"
+                  onClick={() => usunNowyPlik(idx)}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </form>
 
       {ladowanie ? (
@@ -249,28 +321,33 @@ function PanelWypozyczenia() {
           <thead>
             <tr>
               <th>Nazwa</th>
+              <th>Zdjęcia</th>
               <th>Status</th>
               <th>Akcje</th>
             </tr>
           </thead>
           <tbody>
-            {produkty.map((p) => (
-              <tr key={p.id}>
-                <td>{p.nazwa}</td>
-                <td>
-                  <button
-                    className="admin-status-toggle"
-                    onClick={() => handleZmienStatus(p)}
-                  >
-                    {p.dostepnosc}
-                  </button>
-                </td>
-                <td className="admin-akcje-kolumna">
-                  <button onClick={() => handleEdytuj(p)}>Edytuj</button>
-                  <button onClick={() => handleUsun(p.id)}>Usuń</button>
-                </td>
-              </tr>
-            ))}
+            {produkty.map((p) => {
+              const iloscZdjec = pobierzZdjeciaWypozyczenia(p).length;
+              return (
+                <tr key={p.id}>
+                  <td>{p.nazwa}</td>
+                  <td>{iloscZdjec} zdj.</td>
+                  <td>
+                    <button
+                      className="admin-status-toggle"
+                      onClick={() => handleZmienStatus(p)}
+                    >
+                      {p.dostepnosc}
+                    </button>
+                  </td>
+                  <td className="admin-akcje-kolumna">
+                    <button onClick={() => handleEdytuj(p)}>Edytuj</button>
+                    <button onClick={() => handleUsun(p.id)}>Usuń</button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}

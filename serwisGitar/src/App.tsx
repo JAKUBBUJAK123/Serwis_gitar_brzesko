@@ -3,6 +3,7 @@ import MainPage from "./components/MainPage";
 import GaleriaPage from "./components/GaleriaPage";
 import WypozyczeniaPage from "./components/WypozyczeniaPage";
 import { Routes, Route } from "react-router-dom";
+import OgloszeniaPage from "./components/OgloszeniaPage";
 function App() {
   return (
     <>
@@ -10,6 +11,7 @@ function App() {
         <Route path="/" element={<MainPage />} />
         <Route path="/galeria" element={<GaleriaPage />} />
         <Route path="/wypozyczenia" element={<WypozyczeniaPage />} />
+        <Route path="/ogloszenia" element={<OgloszeniaPage />} />
       </Routes>
     </>
   );

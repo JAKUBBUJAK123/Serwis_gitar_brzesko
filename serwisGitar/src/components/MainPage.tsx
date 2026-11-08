@@ -26,13 +26,6 @@ const PRODUKTY = [
     opis: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
     link: "/galeria",
   },
-  {
-    id: 4,
-    nazwa: "Renowacja lakieru",
-    img: "https://picsum.photos/id/342/700/500",
-    opis: "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-    link: "/",
-  },
 ];
 
 function StringDivider() {

@@ -54,6 +54,11 @@ function Navbar() {
             Kontakt
           </Link>
         </li>
+        <li>
+          <Link to="/ogloszenia" onClick={zamknijMenu}>
+            Ogłoszenia
+          </Link>
+        </li>
       </ul>
     </nav>
   );
