@@ -13,6 +13,9 @@ function WypozyczeniaPage() {
   const [blad, setBlad] = useState<string | null>(null);
   const [wybrany, setWybrany] = useState<Wypozyczenie | null>(null);
   const [aktywneZdjecieIdx, setAktywneZdjecieIdx] = useState(0);
+  const [filtr, setFiltr] = useState<"wszystkie" | "Dostępna" | "Wypożyczona">(
+    "wszystkie",
+  );
 
   const pobierzDane = useCallback(() => {
     setLadowanie(true);
@@ -105,53 +108,100 @@ function WypozyczeniaPage() {
           <p className="status-brak">Nie udało się pobrać danych: {blad}</p>
         )}
         {!ladowanie && !blad && (
-          <div className="tableScroll">
-            <table className="wypozyczenia-tabela">
-              <thead>
-                <tr>
-                  <th>Produkt</th>
-                  <th></th>
-                  <th>Dostępność</th>
-                </tr>
-              </thead>
-              <tbody>
-                {wypozyczenia.map((g) => {
+          <>
+            <div className="wypozyczenia-filtry">
+              <button
+                type="button"
+                className={
+                  "wypozyczenia-filtr-btn" +
+                  (filtr === "wszystkie" ? " aktywny" : "")
+                }
+                onClick={() => setFiltr("wszystkie")}
+              >
+                Wszystkie ({wypozyczenia.length})
+              </button>
+              <button
+                type="button"
+                className={
+                  "wypozyczenia-filtr-btn" +
+                  (filtr === "Dostępna" ? " aktywny" : "")
+                }
+                onClick={() => setFiltr("Dostępna")}
+              >
+                Dostępne (
+                {wypozyczenia.filter((w) => w.dostepnosc === "Dostępna").length}
+                )
+              </button>
+              <button
+                type="button"
+                className={
+                  "wypozyczenia-filtr-btn" +
+                  (filtr === "Wypożyczona" ? " aktywny" : "")
+                }
+                onClick={() => setFiltr("Wypożyczona")}
+              >
+                Wypożyczone (
+                {
+                  wypozyczenia.filter((w) => w.dostepnosc === "Wypożyczona")
+                    .length
+                }
+                )
+              </button>
+            </div>
+
+            <div className="wypozyczenia-katalog">
+              {wypozyczenia
+                .filter((g) =>
+                  filtr === "wszystkie" ? true : g.dostepnosc === filtr,
+                )
+                .map((g) => {
                   const listaZdjec = pobierzZdjeciaWypozyczenia(g);
                   const okladka = listaZdjec[0] || "";
+                  const czyDostepna = g.dostepnosc === "Dostępna";
                   return (
-                    <tr
+                    <article
                       key={g.id}
                       onClick={() => otworzPopup(g)}
-                      className="wypozyczenia-row"
+                      className={
+                        "wypozyczenia-karta" +
+                        (!czyDostepna ? " niedostepna" : "")
+                      }
                     >
-                      <td>{g.nazwa}</td>
-                      <td>
-                        <div className="wypozyczenia-img-wrap">
-                          <img
-                            src={okladka}
-                            alt={g.nazwa}
-                            className="wypozyczenia-img"
-                          />
-                        </div>
-                      </td>
-                      <td>
+                      <div className="wypozyczenia-karta-img-wrap">
+                        <img
+                          src={okladka}
+                          alt={g.nazwa}
+                          className="wypozyczenia-karta-img"
+                          loading="lazy"
+                        />
                         <span
                           className={
-                            "status-badge " +
-                            (g.dostepnosc === "Dostępna"
-                              ? "status-ok"
-                              : "status-brak")
+                            "status-badge wypozyczenia-status-pill " +
+                            (czyDostepna ? "status-ok" : "status-brak")
                           }
                         >
+                          <span className="status-dot" />
                           {g.dostepnosc}
                         </span>
-                      </td>
-                    </tr>
+                      </div>
+
+                      <div className="wypozyczenia-karta-tresc">
+                        <h3>{g.nazwa}</h3>
+                        <p className="wypozyczenia-karta-opis">
+                          {g.opis ||
+                            "Kliknij, aby zobaczyć dokładne zdjęcia i szczegóły instrumentu."}
+                        </p>
+                        <div className="wypozyczenia-karta-stopka">
+                          <span className="wypozyczenia-karta-cta">
+                            Zobacz szczegóły →
+                          </span>
+                        </div>
+                      </div>
+                    </article>
                   );
                 })}
-              </tbody>
-            </table>
-          </div>
+            </div>
+          </>
         )}
       </section>
 

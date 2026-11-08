@@ -354,46 +354,174 @@ footer {
   }
 }
 
-.wypozyczenia-tabela {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
+.wypozyczenia-filtry {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.wypozyczenia-filtr-btn {
   background: #fff8ea;
-  border: 1px solid var(--parchment-dark);
-}
-
-.wypozyczenia-tabela th,
-.wypozyczenia-tabela td {
-  padding: 0.9rem 1.2rem;
-  text-align: left;
-  border-bottom: 1px solid var(--parchment-dark);
-  font-size: 1.2rem;
-}
-
-.wypozyczenia-tabela th {
-  font-family: "Story Script", sans-serif;
+  border: 1px solid var(--brass);
   color: var(--walnut);
-  text-transform: uppercase;
-  font-size: 1rem;
-  letter-spacing: 0.06em;
+  font-family: "Story Script", sans-serif;
+  font-size: 1.05rem;
+  padding: 0.45rem 1.2rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.wypozyczenia-filtr-btn:hover {
   background: var(--parchment-dark);
 }
 
-.wypozyczenia-tabela tbody tr:hover {
-  background: rgba(166, 121, 59, 0.08);
+.wypozyczenia-filtr-btn.aktywny {
+  background: var(--walnut);
+  color: var(--brass-light);
+  border-color: var(--walnut);
 }
 
-.wypozyczenia-img-wrap {
-  position: relative;
-  display: inline-block;
+.wypozyczenia-katalog {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 2rem;
 }
 
-.wypozyczenia-img {
-  width: 90px;
-  height: 60px;
-  object-fit: cover;
+.wypozyczenia-karta {
+  background: #fff8ea;
   border: 1px solid var(--brass);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 14px rgba(43, 29, 20, 0.08);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.wypozyczenia-karta:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 28px rgba(43, 29, 20, 0.18);
+  border-color: var(--walnut);
+}
+
+.wypozyczenia-karta.niedostepna {
+  opacity: 0.85;
+}
+
+.wypozyczenia-karta-img-wrap {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  background: #1e140d;
+  border-bottom: 1px solid var(--parchment-dark);
+}
+
+.wypozyczenia-karta-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   display: block;
+  filter: sepia(0.1);
+  transition:
+    transform 0.35s ease,
+    filter 0.35s ease;
+}
+
+.wypozyczenia-karta:hover .wypozyczenia-karta-img {
+  transform: scale(1.06);
+  filter: sepia(0);
+}
+
+.wypozyczenia-status-pill {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 999px;
+  background: rgba(255, 248, 234, 0.94);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.wypozyczenia-ilosc-badge {
+  position: absolute;
+  bottom: 0.65rem;
+  right: 0.65rem;
+  background: rgba(43, 29, 20, 0.85);
+  color: var(--parchment);
+  border: 1px solid var(--brass);
+  font-size: 0.8rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 4px;
+}
+
+.wypozyczenia-karta-tresc {
+  padding: 1.25rem 1.4rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.wypozyczenia-karta-tresc h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.45rem;
+  color: var(--walnut);
+  line-height: 1.25;
+}
+
+.wypozyczenia-karta-opis {
+  margin: 0 0 1.2rem 0;
+  font-size: 1.05rem;
+  color: var(--walnut-light);
+  opacity: 0.9;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+
+.wypozyczenia-karta-stopka {
+  padding-top: 0.85rem;
+  border-top: 1px dashed var(--parchment-dark);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wypozyczenia-karta-cta {
+  color: var(--wine);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.wypozyczenia-karta:hover .wypozyczenia-karta-cta {
+  color: var(--walnut);
+  transform: translateX(4px);
 }
 
 .status-badge {
@@ -406,7 +534,7 @@ footer {
 }
 
 .status-ok {
-  color: #4a6b3a;
+  color: #3b6e28;
 }
 
 .status-brak {
