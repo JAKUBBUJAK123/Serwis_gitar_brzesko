@@ -54,30 +54,134 @@
   transform: translateY(0);
 }
 
+.galeria-ilosc-badge {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  background: rgba(43, 29, 20, 0.85);
+  color: var(--parchment);
+  border: 1px solid var(--brass);
+  padding: 0.2rem 0.55rem;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
 .galeria-lightbox {
   position: fixed;
   inset: 0;
-  background: rgba(20, 13, 8, 0.9);
+  background: rgba(20, 13, 8, 0.92);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  padding: 1.5rem;
   z-index: 200;
   cursor: zoom-out;
 }
 
-.galeria-lightbox img {
-  max-width: 88vw;
-  max-height: 78vh;
-  object-fit: contain;
-  border: 1px solid var(--brass);
+.galeria-lightbox-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  max-width: 92vw;
+  max-height: 90vh;
+  cursor: default;
 }
 
-.galeria-lightbox p {
+.galeria-lightbox-main {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.galeria-lightbox-main img {
+  max-width: 80vw;
+  max-height: 64vh;
+  object-fit: contain;
+  border: 1px solid var(--brass);
+  background: #140d08;
+}
+
+.galeria-nawigacja {
+  background: rgba(43, 29, 20, 0.85);
+  border: 1px solid var(--brass);
+  color: var(--parchment);
+  font-size: 2rem;
+  line-height: 1;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  user-select: none;
+}
+
+.galeria-nawigacja:hover {
+  background: var(--wine);
+  border-color: var(--brass-light);
+}
+
+.galeria-lightbox-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  text-align: center;
+}
+
+.galeria-lightbox-opis {
   color: var(--parchment);
   font-family: "Fraunces", serif;
   margin: 0 1rem;
+  max-width: 70ch;
+}
+
+.galeria-lightbox-licznik {
+  color: var(--brass-light);
+  font-size: 0.85rem;
+}
+
+.galeria-lightbox-miniaturki {
+  display: flex;
+  gap: 0.6rem;
+  overflow-x: auto;
+  max-width: 85vw;
+  padding: 0.3rem;
+}
+
+.galeria-miniaturka-btn {
+  padding: 0;
+  border: 2px solid transparent;
+  background: none;
+  cursor: pointer;
+  width: 68px;
+  height: 52px;
+  flex-shrink: 0;
+  opacity: 0.6;
+  transition: opacity 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.galeria-miniaturka-btn:hover {
+  opacity: 0.9;
+}
+
+.galeria-miniaturka-btn.aktywna {
+  opacity: 1;
+  border-color: var(--brass-light);
+  transform: scale(1.05);
+}
+
+.galeria-miniaturka-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .galeria-zamknij {
