@@ -31,8 +31,8 @@ CORS(
 )
 app.config["MAX_CONTENT_LENGTH"] = MAX_ROZMIAR_MB * 1024 * 1024
 
-API_SECRET_TOKEN = os.getenv("API_SECRET_TOKEN", "serwis-gitar-klucz-2026")
-ADMIN_HASLO = os.getenv("ADMIN_HASLO", "gitara123")
+API_SECRET_TOKEN = os.getenv("API_SECRET_TOKEN")
+ADMIN_HASLO = os.getenv("ADMIN_HASLO")
 
 
 @app.before_request
