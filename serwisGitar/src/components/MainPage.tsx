@@ -9,21 +9,21 @@ const PRODUKTY = [
     id: 1,
     nazwa: "Wypożyczenie gitar",
     img: "/imgs/Jolana.jpg",
-    opis: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    opis: "W tej zakładce znajduje się aktualny spis gitar dostępnych w naszej wypożyczalni. Przy każdym instrumencie zamieszczamy informacje o jego specyfikacji oraz aktualnym statusie dostępności. Dzięki temu mogą Państwo łatwo sprawdzić, jakie modele są obecnie dostępne do wypożyczenia.",
     link: "/wypozyczenia",
   },
   {
     id: 2,
-    nazwa: "Sprzedaż gitar i akcesoriów",
+    nazwa: "Ogłoszenia",
     img: "/imgs/blackRR.jpg",
-    opis: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    link: "/",
+    opis: "W tej sekcji znajdą Państwo przekierowania do naszych aktualnych ofert sprzedaży. Publikujemy tam ogłoszenia dotyczące gitar, części oraz sprzętu muzycznego. Zachęcamy do regularnego zaglądania – oferta może się zmieniać i pojawiać mogą się nowe, interesujące pozycje.",
+    link: "/ogloszenia",
   },
   {
     id: 3,
-    nazwa: "Fotografia gitar",
+    nazwa: "Projekty",
     img: "https://picsum.photos/id/250/700/500",
-    opis: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+    opis: "Tutaj prezentujemy instrumenty, które przeszły kompleksowe przebudowy i modyfikacje. Każdy projekt to osobna historia, od początkowej koncepcji, przez dobór odpowiednich podzespołów, aż po efekt końcowy. To miejsce, w którym można zobaczyć, jak wiele można zmienić w gitarze dzięki odpowiednim pomysłom i pracy.",
     link: "/galeria",
   },
 ];
@@ -60,33 +60,66 @@ function MainPage() {
         <Navbar />
         <section id="o-nas" className="section o-nas">
           <div>
-            <div className="eyebrow">Jebac disa</div>
-            <h1>Testestestestes.</h1>
+            <div className="eyebrow">Witamy!</div>
+            <h1>Adrian i Wiktor z tej strony!</h1>
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat.
+              Prowadzimy serwis gitarowy, w którym zajmujemy się wszystkim – od
+              drobnych poprawek i regulacji (setupu) po kompleksowe przebudowy
+              instrumentów. U nas kupisz, wypożyczysz lub naprawisz gitarę. Masz
+              pytania dotyczące instrumentów lub nagłośnienia? Napisz do nas – z
+              przyjemnością pomożemy! Trochę o nas Jesteśmy duetem pasjonatów,
+              którzy zajmują się gitarami pod niemal każdym względem. Nasza
+              działalność obejmuje nie tylko podstawowe usługi serwisowe, ale
+              również sprzedaż, wypożyczanie oraz kompleksowe przebudowy
+              instrumentów. Do każdego zlecenia podchodzimy z pełnym
+              zaangażowaniem i pasją, niezależnie od tego, ile pracy wymaga dany
+              instrument. Nie stoi za nami żadna wielka firma ani korporacja –
+              działamy na własną rękę, samodzielnie zaopatrując się we wszystkie
+              niezbędne narzędzia i części gitarowe.
+            </p>
+            <h1> O naszej stronie</h1>
+            <p>
+              Na naszej stronie znajdą Państwo wszystkie najważniejsze
+              informacje dotyczące naszej działalności. Przygotowaliśmy między
+              innymi portfolio naszych prac, listę gitar dostępnych do
+              wypożyczenia wraz z aktualnymi statusami ich dostępności, a także
+              zakładkę z naszymi ogłoszeniami.
             </p>
             <p>
-              Duis aute irure dolor in reprehenderit in voluptate velit esse
-              cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-              cupidatat non proident, sunt in culpa qui officia deserunt mollit
-              anim id est laborum.
+              Chcemy, aby strona była nie tylko wizytówką naszego serwisu, ale
+              również praktycznym miejscem, w którym można znaleźć potrzebne
+              informacje i zapoznać się z naszą ofertą. Zależy nam na
+              przejrzystości, dlatego staramy się, aby wszystkie najważniejsze
+              informacje były łatwo dostępne i na bieżąco aktualizowane.
+            </p>
+            <p>
+              W portfolio będziemy prezentować wybrane realizacje, naprawy i
+              modyfikacje instrumentów, aby pokazać efekty naszej pracy oraz
+              możliwości, jakie oferujemy. W zakładce wypożyczalni znajdą
+              Państwo dostępne instrumenty i informacje o ich aktualnym
+              statusie. Z kolei dział ogłoszeń pozwoli nam informować o nowych
+              gitarach, częściach, sprzęcie oraz innych interesujących ofertach.
+              Jeżeli nie znajdą Państwo odpowiedzi na nurtujące pytania,
+              zachęcamy do bezpośredniego kontaktu. Chętnie doradzimy, pomożemy
+              dobrać odpowiednie rozwiązanie i odpowiemy na wszelkie pytania
+              związane z gitarami oraz sprzętem muzycznym. Zapraszamy do
+              przeglądania strony i śledzenia naszych aktualności!
             </p>
           </div>
           <div className="zdjecie">
             <img src="/imgs/guitar1.jpg" alt="gitara" />
           </div>
         </section>
-
         <StringDivider />
 
         <section id="produkty" className="section produkty">
           <h2>Nasze usługi</h2>
           <p className="section-lead">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit — poniżej
-            przykładowe kategorie usług serwisowych.
+            Tutaj prezentujemy instrumenty, które przeszły kompleksowe
+            przebudowy i modyfikacje. Każdy projekt to osobna historia, od
+            początkowej koncepcji, przez dobór odpowiednich podzespołów, aż po
+            efekt końcowy. To miejsce, w którym można zobaczyć, jak wiele można
+            zmienić w gitarze dzięki odpowiednim pomysłom i pracy.
           </p>
           <div className="produkty-grid">
             {PRODUKTY.map((p) => (

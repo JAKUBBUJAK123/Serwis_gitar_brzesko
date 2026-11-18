@@ -101,8 +101,11 @@ function WypozyczeniaPage() {
       <section id="wypożyczenia" className="section wypozyczenia">
         <h2>Wypożyczenia</h2>
         <p className="section-lead">
-          Lorem ipsum dolor sit amet — poniżej przykładowa lista instrumentów
-          dostępnych do wypożyczenia.
+          W tej zakładce znajduje się aktualny spis gitar dostępnych w naszej
+          wypożyczalni. Przy każdym instrumencie zamieszczamy informacje o jego
+          specyfikacji oraz aktualnym statusie dostępności. Dzięki temu mogą
+          Państwo łatwo sprawdzić, jakie modele są obecnie dostępne do
+          wypożyczenia.
         </p>
         {ladowanie && <p>Ładowanie danych...</p>}
         {blad && (

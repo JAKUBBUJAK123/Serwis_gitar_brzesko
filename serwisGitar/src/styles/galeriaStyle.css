@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 .galeria-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -40,8 +41,8 @@
   padding: 0.6rem 0.8rem;
   background: linear-gradient(to top, rgba(43, 29, 20, 0.85), transparent);
   color: var(--parchment);
-  font-family: "Fraunces", serif;
-  font-size: 0.9rem;
+  font-family: "Roboto", sans-serif;
+  font-size: 0.85rem;
   text-align: left;
   opacity: 0;
   transform: translateY(6px);
@@ -139,7 +140,7 @@
 
 .galeria-lightbox-opis {
   color: var(--parchment);
-  font-family: "Fraunces", serif;
+  font-family: "Roboto", sans-serif;
   margin: 0 1rem;
   max-width: 70ch;
 }

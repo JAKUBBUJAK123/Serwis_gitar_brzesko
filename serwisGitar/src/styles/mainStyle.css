@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Story+Script&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 :root {
   --parchment: #efe6d3;
   --parchment-dark: #e4d7ba;
@@ -8,9 +8,11 @@
   --brass-light: #c9a15f;
   --wine: #6e2430;
   --ink: #241a12;
+  --font-main: "Roboto", sans-serif;
 }
 body {
   margin: 0;
+  font-family: var(--font-main);
 }
 html {
   scroll-behavior: smooth;
@@ -21,19 +23,24 @@ section[id] {
 .luthier-page {
   background: var(--parchment);
   color: var(--ink);
-  font-family: "Story Script", sans-serif;
-  line-height: 1.6;
+  font-family: var(--font-main);
+  line-height: 1.65;
   scroll-behavior: smooth;
 }
-.luthier-page * {
+.luthier-page *,
+.luthier-page button,
+.luthier-page input,
+.luthier-page select,
+.luthier-page textarea {
   box-sizing: border-box;
+  font-family: var(--font-main);
 }
 .luthier-page h1,
 .luthier-page h2,
 .luthier-page h3,
 .luthier-page .brand {
-  font-family: "Story Script", sans-serif;
-  letter-spacing: 0.01em;
+  font-family: var(--font-main);
+  letter-spacing: -0.02em;
 }
 /* NAVBAR */
 .navbar {
@@ -62,10 +69,10 @@ section[id] {
 .navbar .brand span {
   color: var(--parchment);
   font-weight: 400;
-  font-size: 1rem;
+  font-size: 0.85rem;
   display: block;
-  font-family: "Story Script", sans-serif;
-  letter-spacing: 0.15em;
+  font-family: var(--font-main);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   opacity: 0.7;
   width: 100%;
@@ -116,66 +123,70 @@ section[id] {
 .section {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 5rem 1.5rem;
+  padding: 4rem 1.5rem;
   min-height: 83vh;
 }
 .o-nas {
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 3rem;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
 }
 .o-nas .eyebrow {
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  font-size: 1rem;
+  letter-spacing: 0.15em;
+  font-size: 2.2rem;
   color: var(--wine);
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 0.75rem;
 }
 .o-nas h1 {
-  font-size: 2.6rem;
-  margin: 0 0 1.2rem 0;
+  font-size: 1.9rem;
+  margin: 1.8rem 0 1rem 0;
   color: var(--walnut);
-  line-height: 1.15;
+  line-height: 1.25;
+}
+.o-nas h1:first-of-type {
+  margin-top: 0;
 }
 .o-nas p,
 .section-lead {
-  margin: 0 0 1rem 0;
-  max-width: 55ch;
-  font-size: 1.5rem;
-}
-.o-nas p:last-child {
-  font-size: 1.3rem;
+  margin: 0 0 1.1rem 0;
+  font-size: 1.05rem;
+  line-height: 1.75;
 }
 .o-nas .zdjecie {
   position: relative;
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
 }
 .o-nas .zdjecie img {
-  width: 300px;
-  height: 500px;
+  width: 100%;
+  max-width: 820px;
+  height: 400px;
   object-fit: cover;
+  border-radius: 8px;
   border: 1px solid var(--brass);
   box-shadow:
-    10px 10px 0 var(--parchment-dark),
-    10px 10px 0 1px var(--brass);
+    12px 12px 0 var(--parchment-dark),
+    12px 12px 0 1px var(--brass);
 }
 /* PRODUKTY */
 .produkty h2,
 .kontakt h2,
 #wypożyczenia h2 {
-  font-size: 2.6rem;
+  font-size: 2rem;
   color: var(--walnut);
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.6rem;
 }
 .section-lead {
   color: var(--walnut-light);
   margin-bottom: 2.5rem;
-  max-width: 60ch;
+  max-width: 75ch;
 }
 .produkty-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
   gap: 2.2rem;
 }
 .produkty-grid a {
@@ -189,6 +200,7 @@ section[id] {
     transform 0.2s ease,
     box-shadow 0.2s ease;
   border-radius: 8px;
+  height: 100%;
 }
 .produkt-card:hover {
   transform: translateY(-4px);
@@ -284,7 +296,7 @@ section[id] {
   border: 1px solid var(--brass);
   color: var(--parchment);
   padding: 0.7rem 0.8rem;
-  font-family: "Story Script", sans-serif;
+  font-family: var(--font-main);
   font-size: 0.95rem;
 }
 .kontakt-form input::placeholder,
@@ -302,7 +314,7 @@ section[id] {
   color: var(--parchment);
   border: 1px solid var(--brass-light);
   padding: 0.75rem 1.8rem;
-  font-family: "Story Script", sans-serif;
+  font-family: var(--font-main);
   font-size: 1rem;
   letter-spacing: 0.03em;
   cursor: pointer;
@@ -365,8 +377,8 @@ footer {
   background: #fff8ea;
   border: 1px solid var(--brass);
   color: var(--walnut);
-  font-family: "Story Script", sans-serif;
-  font-size: 1.05rem;
+  font-family: var(--font-main);
+  font-size: 0.95rem;
   padding: 0.45rem 1.2rem;
   border-radius: 999px;
   cursor: pointer;
@@ -516,7 +528,9 @@ footer {
   font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  transition: transform 0.2s ease, color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
 }
 
 .wypozyczenia-karta:hover .wypozyczenia-karta-cta {

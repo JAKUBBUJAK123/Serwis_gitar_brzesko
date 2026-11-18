@@ -14,7 +14,9 @@ function AdminPanel() {
   const [zalogowany, setZalogowany] = useState(false);
   const [haslo, setHaslo] = useState("");
   const [bladHasla, setBladHasla] = useState(false);
-  const [zakladka, setZakladka] = useState("wypozyczenia");
+  const [zakladka, setZakladka] = useState<"wypozyczenia" | "galeria">(
+    "wypozyczenia",
+  );
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -53,23 +55,37 @@ function AdminPanel() {
     <div className="admin-overlay">
       {pokazLogowanie && !zalogowany && (
         <div className="admin-modal admin-login">
-          <h3>Panel administratora</h3>
+          <div className="admin-login-header">
+            <h3>Panel administratora</h3>
+            <p>Wprowadź hasło, aby zarządzać stroną</p>
+          </div>
           <form onSubmit={handleLogowanie}>
-            <label htmlFor="admin-haslo">Hasło</label>
-            <input
-              id="admin-haslo"
-              type="password"
-              autoFocus
-              value={haslo}
-              onChange={(e) => {
-                setHaslo(e.target.value);
-                setBladHasla(false);
-              }}
-            />
-            {bladHasla && <p className="admin-blad">Nieprawidłowe hasło</p>}
+            <div className="admin-pole">
+              <label htmlFor="admin-haslo">Hasło dostępu</label>
+              <input
+                id="admin-haslo"
+                type="password"
+                placeholder="Wpisz hasło..."
+                autoFocus
+                value={haslo}
+                onChange={(e) => {
+                  setHaslo(e.target.value);
+                  setBladHasla(false);
+                }}
+              />
+            </div>
+            {bladHasla && (
+              <p className="admin-blad">Nieprawidłowe hasło. Spróbuj ponownie.</p>
+            )}
             <div className="admin-akcje">
-              <button type="submit">Zaloguj</button>
-              <button type="button" onClick={() => setPokazLogowanie(false)}>
+              <button type="submit" className="admin-btn admin-btn-primary">
+                Zaloguj się
+              </button>
+              <button
+                type="button"
+                className="admin-btn admin-btn-secondary"
+                onClick={() => setPokazLogowanie(false)}
+              >
                 Anuluj
               </button>
             </div>
@@ -80,32 +96,51 @@ function AdminPanel() {
       {zalogowany && (
         <div className="admin-modal admin-panel">
           <div className="admin-naglowek">
-            <h3>Panel administratora</h3>
-            <button className="admin-zamknij" onClick={zamknij}>
-              ✕
+            <div>
+              <h3>Panel zarządzania stroną</h3>
+              <p className="admin-podtytul">
+                Dodawaj i edytuj instrumenty oraz zdjęcia w portfolio
+              </p>
+            </div>
+            <button
+              type="button"
+              className="admin-zamknij"
+              onClick={zamknij}
+              title="Zamknij panel (Esc)"
+            >
+              Zamknij ✕
             </button>
           </div>
 
           <div className="admin-taby">
             <button
-              className={zakladka === "wypozyczenia" ? "aktywna" : ""}
+              type="button"
+              className={
+                "admin-tab-btn" +
+                (zakladka === "wypozyczenia" ? " aktywna" : "")
+              }
               onClick={() => setZakladka("wypozyczenia")}
             >
               Wypożyczenia
             </button>
             <button
-              className={zakladka === "galeria" ? "aktywna" : ""}
+              type="button"
+              className={
+                "admin-tab-btn" + (zakladka === "galeria" ? " aktywna" : "")
+              }
               onClick={() => setZakladka("galeria")}
             >
-              Galeria
+              Galeria (Portfolio)
             </button>
           </div>
 
-          {zakladka === "wypozyczenia" ? (
-            <PanelWypozyczenia />
-          ) : (
-            <PanelGaleria />
-          )}
+          <div className="admin-tresc">
+            {zakladka === "wypozyczenia" ? (
+              <PanelWypozyczenia />
+            ) : (
+              <PanelGaleria />
+            )}
+          </div>
         </div>
       )}
     </div>
@@ -120,6 +155,80 @@ async function wgrajPlik(plik: File): Promise<string> {
   if (!res.ok) throw new Error("Błąd uploadu pliku");
   const wynik = await res.json();
   return wynik.url;
+}
+
+function PodgladZalacznikow({
+  obecneZdjecia,
+  pliki,
+  onUsunObecne,
+  onUsunNowy,
+}: {
+  obecneZdjecia: string[];
+  pliki: File[];
+  onUsunObecne: (idx: number) => void;
+  onUsunNowy: (idx: number) => void;
+}) {
+  if (obecneZdjecia.length === 0 && pliki.length === 0) return null;
+
+  const lacznaIlosc = obecneZdjecia.length + pliki.length;
+
+  return (
+    <div className="admin-zalaczniki-sekcja">
+      <div className="admin-zalaczniki-naglowek">
+        Wybrane zdjęcia ({lacznaIlosc}) — pierwsze zdjęcie będzie okładką:
+      </div>
+      <div className="admin-zalaczniki-lista">
+        {obecneZdjecia.map((url, idx) => (
+          <div className="admin-zalacznik-karta" key={`obecne-${idx}`}>
+            {idx === 0 && (
+              <span className="admin-zalacznik-okladka-badge">Okładka</span>
+            )}
+            <img src={url} alt={`Zdjęcie ${idx + 1}`} />
+            <div className="admin-zalacznik-stopka">
+              <span>Zapisane #{idx + 1}</span>
+              <button
+                type="button"
+                className="admin-zalacznik-usun"
+                title="Usuń to zdjęcie"
+                onClick={() => onUsunObecne(idx)}
+              >
+                Usuń ✕
+              </button>
+            </div>
+          </div>
+        ))}
+        {pliki.map((plik, idx) => {
+          const czyOkladka = obecneZdjecia.length === 0 && idx === 0;
+          const previewUrl = URL.createObjectURL(plik);
+          return (
+            <div className="admin-zalacznik-karta nowy" key={`nowy-${idx}`}>
+              {czyOkladka && (
+                <span className="admin-zalacznik-okladka-badge">Okładka</span>
+              )}
+              <img
+                src={previewUrl}
+                alt={plik.name}
+                onLoad={() => URL.revokeObjectURL(previewUrl)}
+              />
+              <div className="admin-zalacznik-stopka">
+                <span className="admin-zalacznik-nazwa" title={plik.name}>
+                  {plik.name}
+                </span>
+                <button
+                  type="button"
+                  className="admin-zalacznik-usun"
+                  title="Usuń załącznik"
+                  onClick={() => onUsunNowy(idx)}
+                >
+                  Usuń ✕
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
 function PanelWypozyczenia() {
@@ -240,120 +349,189 @@ function PanelWypozyczenia() {
   }
 
   return (
-    <>
-      <form className="admin-formularz" onSubmit={handleZapisz}>
-        <input
-          type="text"
-          placeholder="Nazwa produktu"
-          value={nazwa}
-          onChange={(e) => setNazwa(e.target.value)}
-          required
-        />
-        <select
-          value={dostepnosc}
-          onChange={(e) => setDostepnosc(e.target.value)}
-        >
-          <option value="Dostępna">Dostępna</option>
-          <option value="Wypożyczona">Wypożyczona</option>
-        </select>
-        <textarea
-          placeholder="Opis produktu"
-          value={opis}
-          onChange={(e) => setOpis(e.target.value)}
-          rows={3}
-        />
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={handleWybierzPliki}
-        />
-        <button type="submit" disabled={wysylanie}>
-          {wysylanie
-            ? "Zapisywanie..."
-            : edytowany
-              ? "Zapisz zmiany"
-              : "Dodaj produkt"}
-        </button>
-        {edytowany && (
-          <button type="button" onClick={resetFormularza}>
-            Anuluj edycję
-          </button>
-        )}
+    <div className="admin-sekcja">
+      <div
+        className={
+          "admin-karta-formularza" + (edytowany ? " tryb-edycji" : "")
+        }
+      >
+        <div className="admin-karta-naglowek">
+          <h4>
+            {edytowany
+              ? `Edytujesz instrument: ${edytowany.nazwa}`
+              : "Dodaj nowy instrument do wypożyczalni"}
+          </h4>
+          {edytowany && (
+            <span className="admin-tryb-badge">Tryb edycji</span>
+          )}
+        </div>
 
-        {(obecneZdjecia.length > 0 || pliki.length > 0) && (
-          <div className="admin-zalaczniki-lista">
-            {obecneZdjecia.map((url, idx) => (
-              <div className="admin-zalacznik-item" key={`obecne-wyp-${idx}`}>
-                <img src={url} alt={`Zdjęcie ${idx + 1}`} />
-                <button
-                  type="button"
-                  title="Usuń to zdjęcie"
-                  onClick={() => usunObecneZdjecie(idx)}
-                >
-                  ✕
-                </button>
-              </div>
-            ))}
-            {pliki.map((plik, idx) => (
-              <div
-                className="admin-zalacznik-item nowy"
-                key={`nowy-wyp-${idx}`}
+        <form className="admin-formularz" onSubmit={handleZapisz}>
+          <div className="admin-form-wiersz">
+            <div className="admin-pole">
+              <label>Nazwa instrumentu *</label>
+              <input
+                type="text"
+                placeholder="np. Fender Stratocaster MIM"
+                value={nazwa}
+                onChange={(e) => setNazwa(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="admin-pole admin-pole-krotkie">
+              <label>Status dostępności</label>
+              <select
+                value={dostepnosc}
+                onChange={(e) => setDostepnosc(e.target.value)}
               >
-                <span className="admin-zalacznik-nazwa" title={plik.name}>
-                  + {plik.name}
-                </span>
-                <button
-                  type="button"
-                  title="Usuń załącznik"
-                  onClick={() => usunNowyPlik(idx)}
-                >
-                  ✕
-                </button>
-              </div>
-            ))}
+                <option value="Dostępna">Dostępna</option>
+                <option value="Wypożyczona">Wypożyczona</option>
+              </select>
+            </div>
           </div>
-        )}
-      </form>
 
-      {ladowanie ? (
-        <p>Ładowanie...</p>
-      ) : (
-        <table className="admin-tabela">
-          <thead>
-            <tr>
-              <th>Nazwa</th>
-              <th>Zdjęcia</th>
-              <th>Status</th>
-              <th>Akcje</th>
-            </tr>
-          </thead>
-          <tbody>
+          <div className="admin-pole">
+            <label>Opis instrumentu (widoczny po kliknięciu)</label>
+            <textarea
+              placeholder="Opisz stan, specyfikację, strojenie lub warunki wypożyczenia..."
+              value={opis}
+              onChange={(e) => setOpis(e.target.value)}
+              rows={3}
+            />
+          </div>
+
+          <div className="admin-pole">
+            <label>Zdjęcia instrumentu *</label>
+            <label className="admin-upload-dropzone">
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleWybierzPliki}
+              />
+              <span className="admin-upload-tytul">
+                + Kliknij tutaj, aby wybrać zdjęcia z dysku
+              </span>
+              <span className="admin-upload-opis">
+                Możesz zaznaczyć jedno lub kilka zdjęć naraz (JPG, PNG, WEBP)
+              </span>
+            </label>
+          </div>
+
+          <PodgladZalacznikow
+            obecneZdjecia={obecneZdjecia}
+            pliki={pliki}
+            onUsunObecne={usunObecneZdjecie}
+            onUsunNowy={usunNowyPlik}
+          />
+
+          <div className="admin-form-akcje">
+            <button
+              type="submit"
+              className="admin-btn admin-btn-primary"
+              disabled={wysylanie}
+            >
+              {wysylanie
+                ? "Trwa zapisywanie i wgrywanie zdjęć..."
+                : edytowany
+                  ? "Zapisz zmiany"
+                  : "Dodaj instrument"}
+            </button>
+            {edytowany && (
+              <button
+                type="button"
+                className="admin-btn admin-btn-secondary"
+                onClick={resetFormularza}
+              >
+                Anuluj edycję
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
+
+      <div className="admin-lista-sekcja">
+        <h4 className="admin-lista-naglowek">
+          Lista instrumentów ({produkty.length})
+        </h4>
+
+        {ladowanie ? (
+          <p className="admin-info-tekst">Ładowanie listy instrumentów...</p>
+        ) : produkty.length === 0 ? (
+          <p className="admin-info-tekst">
+            Brak instrumentów na liście. Dodaj pierwszy powyżej.
+          </p>
+        ) : (
+          <div className="admin-wypozyczenia-lista">
             {produkty.map((p) => {
-              const iloscZdjec = pobierzZdjeciaWypozyczenia(p).length;
+              const zdjeciaProduktu = pobierzZdjeciaWypozyczenia(p);
+              const okladka = zdjeciaProduktu[0] || "";
+              const czyDostepna = p.dostepnosc === "Dostępna";
               return (
-                <tr key={p.id}>
-                  <td>{p.nazwa}</td>
-                  <td>{iloscZdjec} zdj.</td>
-                  <td>
+                <div
+                  key={p.id}
+                  className={
+                    "admin-wypozyczenie-wiersz" +
+                    (edytowany?.id === p.id ? " aktywny-wiersz" : "")
+                  }
+                >
+                  <div className="admin-wypozyczenie-miniatura">
+                    {okladka ? (
+                      <img src={okladka} alt={p.nazwa} />
+                    ) : (
+                      <div className="admin-brak-zdjecia">Brak</div>
+                    )}
+                    <span className="admin-miniatura-licznik">
+                      {zdjeciaProduktu.length} zdj.
+                    </span>
+                  </div>
+
+                  <div className="admin-wypozyczenie-info">
+                    <div className="admin-wypozyczenie-tytul">{p.nazwa}</div>
+                    <div className="admin-wypozyczenie-opis">
+                      {p.opis || "Brak opisu"}
+                    </div>
+                  </div>
+
+                  <div className="admin-wypozyczenie-status">
                     <button
-                      className="admin-status-toggle"
+                      type="button"
+                      title="Kliknij, aby szybko zmienić status dostępności"
+                      className={
+                        "admin-status-pill " +
+                        (czyDostepna ? "status-dostepna" : "status-wypozyczona")
+                      }
                       onClick={() => handleZmienStatus(p)}
                     >
+                      <span className="admin-status-kropka" />
                       {p.dostepnosc}
                     </button>
-                  </td>
-                  <td className="admin-akcje-kolumna">
-                    <button onClick={() => handleEdytuj(p)}>Edytuj</button>
-                    <button onClick={() => handleUsun(p.id)}>Usuń</button>
-                  </td>
-                </tr>
+                  </div>
+
+                  <div className="admin-wypozyczenie-akcje">
+                    <button
+                      type="button"
+                      className="admin-btn admin-btn-secondary"
+                      onClick={() => handleEdytuj(p)}
+                    >
+                      Edytuj
+                    </button>
+                    <button
+                      type="button"
+                      className="admin-btn admin-btn-danger"
+                      onClick={() => handleUsun(p.id)}
+                    >
+                      Usuń
+                    </button>
+                  </div>
+                </div>
               );
             })}
-          </tbody>
-        </table>
-      )}
-    </>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -448,105 +626,149 @@ function PanelGaleria() {
   }
 
   function handleUsun(id: string) {
-    if (!confirm("Na pewno usunąć ten obiekt?")) return;
+    if (!confirm("Na pewno usunąć ten obiekt z galerii?")) return;
     apiFetch(`/galeria/${id}`, { method: "DELETE" }).then(() =>
       pobierz(true),
     );
   }
 
   return (
-    <>
-      <form className="admin-formularz" onSubmit={handleZapisz}>
-        <input
-          type="text"
-          placeholder="Opis obiektu"
-          value={opis}
-          onChange={(e) => setOpis(e.target.value)}
-          required
-        />
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={handleWybierzPliki}
-        />
-        <button type="submit" disabled={wysylanie}>
-          {wysylanie
-            ? "Wgrywanie..."
-            : edytowany
-              ? "Zapisz zmiany"
-              : "Dodaj obiekt"}
-        </button>
-        {edytowany && (
-          <button type="button" onClick={resetFormularza}>
-            Anuluj edycję
-          </button>
-        )}
+    <div className="admin-sekcja">
+      <div
+        className={
+          "admin-karta-formularza" + (edytowany ? " tryb-edycji" : "")
+        }
+      >
+        <div className="admin-karta-naglowek">
+          <h4>
+            {edytowany
+              ? "Edytujesz wpis w galerii"
+              : "Dodaj nową realizację do galerii"}
+          </h4>
+          {edytowany && (
+            <span className="admin-tryb-badge">Tryb edycji</span>
+          )}
+        </div>
 
-        {(obecneZdjecia.length > 0 || pliki.length > 0) && (
-          <div className="admin-zalaczniki-lista">
-            {obecneZdjecia.map((url, idx) => (
-              <div className="admin-zalacznik-item" key={`obecne-${idx}`}>
-                <img src={url} alt={`Zdjęcie ${idx + 1}`} />
-                <button
-                  type="button"
-                  title="Usuń to zdjęcie"
-                  onClick={() => usunObecneZdjecie(idx)}
+        <form className="admin-formularz" onSubmit={handleZapisz}>
+          <div className="admin-pole">
+            <label>Opis realizacji / projektu *</label>
+            <textarea
+              placeholder="Opisz co zostało zrobione przy gitarze..."
+              value={opis}
+              onChange={(e) => setOpis(e.target.value)}
+              rows={3}
+              required
+            />
+          </div>
+
+          <div className="admin-pole">
+            <label>Zdjęcia realizacji *</label>
+            <label className="admin-upload-dropzone">
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleWybierzPliki}
+              />
+              <span className="admin-upload-tytul">
+                + Kliknij tutaj, aby wybrać zdjęcia z dysku
+              </span>
+              <span className="admin-upload-opis">
+                Możesz wybrać kilka zdjęć naraz lub dokładać kolejne przed
+                zapisem
+              </span>
+            </label>
+          </div>
+
+          <PodgladZalacznikow
+            obecneZdjecia={obecneZdjecia}
+            pliki={pliki}
+            onUsunObecne={usunObecneZdjecie}
+            onUsunNowy={usunNowyPlik}
+          />
+
+          <div className="admin-form-akcje">
+            <button
+              type="submit"
+              className="admin-btn admin-btn-primary"
+              disabled={wysylanie}
+            >
+              {wysylanie
+                ? "Trwa wgrywanie zdjęć..."
+                : edytowany
+                  ? "Zapisz zmiany"
+                  : "Dodaj do galerii"}
+            </button>
+            {edytowany && (
+              <button
+                type="button"
+                className="admin-btn admin-btn-secondary"
+                onClick={resetFormularza}
+              >
+                Anuluj edycję
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
+
+      <div className="admin-lista-sekcja">
+        <h4 className="admin-lista-naglowek">
+          Wpisów w galerii ({zdjecia.length})
+        </h4>
+
+        {ladowanie ? (
+          <p className="admin-info-tekst">Ładowanie galerii...</p>
+        ) : zdjecia.length === 0 ? (
+          <p className="admin-info-tekst">
+            Brak obiektów w galerii. Dodaj pierwszą realizację powyżej.
+          </p>
+        ) : (
+          <div className="admin-galeria-grid">
+            {zdjecia.map((z) => {
+              const lista = pobierzZdjeciaObiektu(z);
+              const okladka = lista[0] || "";
+              return (
+                <div
+                  className={
+                    "admin-galeria-kafelek" +
+                    (edytowany?.id === z.id ? " aktywny-kafelek" : "")
+                  }
+                  key={z.id}
                 >
-                  ✕
-                </button>
-              </div>
-            ))}
-            {pliki.map((plik, idx) => (
-              <div className="admin-zalacznik-item nowy" key={`nowy-${idx}`}>
-                <span className="admin-zalacznik-nazwa" title={plik.name}>
-                  + {plik.name}
-                </span>
-                <button
-                  type="button"
-                  title="Usuń załącznik"
-                  onClick={() => usunNowyPlik(idx)}
-                >
-                  ✕
-                </button>
-              </div>
-            ))}
+                  <div className="admin-galeria-miniatura-wrap">
+                    <img src={okladka} alt={z.opis} />
+                    <span className="admin-galeria-licznik">
+                      {lista.length} zdj.
+                    </span>
+                  </div>
+                  <div className="admin-galeria-opis">
+                    <p>{z.opis}</p>
+                  </div>
+                  <div className="admin-galeria-akcje">
+                    <button
+                      type="button"
+                      className="admin-btn admin-btn-secondary"
+                      onClick={() => handleEdytuj(z)}
+                    >
+                      Edytuj
+                    </button>
+                    <button
+                      type="button"
+                      className="admin-btn admin-btn-danger"
+                      onClick={() => handleUsun(z.id)}
+                    >
+                      Usuń
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
-      </form>
-
-      {ladowanie ? (
-        <p>Ładowanie...</p>
-      ) : (
-        <div className="admin-galeria-grid">
-          {zdjecia.map((z) => {
-            const lista = pobierzZdjeciaObiektu(z);
-            const okladka = lista[0] || "";
-            return (
-              <div className="admin-galeria-kafelek" key={z.id}>
-                <div className="admin-galeria-miniatura-wrap">
-                  <img src={okladka} alt={z.opis} />
-                  <span className="admin-galeria-licznik">
-                    {lista.length} zdj.
-                  </span>
-                </div>
-                <div className="admin-galeria-opis">
-                  <p>{z.opis}</p>
-                </div>
-                <div className="admin-galeria-akcje">
-                  <button type="button" onClick={() => handleEdytuj(z)}>
-                    Edytuj
-                  </button>
-                  <button type="button" onClick={() => handleUsun(z.id)}>
-                    Usuń
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </>
+      </div>
+    </div>
   );
 }
 

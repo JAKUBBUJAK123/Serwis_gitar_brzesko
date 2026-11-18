@@ -89,7 +89,11 @@ function GaleriaPage() {
       <section className="section galeria">
         <h2>Galeria zdjęć</h2>
         <p className="section-lead">
-          Kilka ujęć z naszego warsztatu i zrealizowanych napraw.
+          Tutaj prezentujemy instrumenty, które przeszły kompleksowe przebudowy
+          i modyfikacje. Każdy projekt to osobna historia, od początkowej
+          koncepcji, przez dobór odpowiednich podzespołów, aż po efekt końcowy.
+          To miejsce, w którym można zobaczyć, jak wiele można zmienić w gitarze
+          dzięki odpowiednim pomysłom i pracy.
         </p>
 
         {ladowanie && <p>Ładowanie danych...</p>}
