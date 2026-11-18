@@ -631,6 +631,17 @@
   margin: 0;
 }
 
+.admin-ogloszenie-link {
+  color: var(--wine);
+  text-decoration: underline;
+  word-break: break-all;
+  font-size: 0.76rem;
+}
+
+.admin-ogloszenie-link:hover {
+  color: var(--walnut);
+}
+
 .admin-galeria-akcje {
   display: grid;
   grid-template-columns: 1fr 1fr;

@@ -163,6 +163,7 @@ def stworz_endpointy(nazwa_tabeli):
 
 stworz_endpointy("wypozyczenia")
 stworz_endpointy("galeria")
+stworz_endpointy("ogloszenia")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 3001))

@@ -5,6 +5,7 @@ import {
   type Wypozyczenie,
 } from "../types/Wypozyczenia";
 import { pobierzZdjeciaObiektu, type Zdjecie } from "../types/Zdjecia";
+import type { Ogloszenie } from "../types/Ogloszenia";
 import { apiFetch } from "../utils/api";
 
 const ADMIN_HASLO = import.meta.env.VITE_ADMIN_HASLO || "gitara123";
@@ -14,9 +15,9 @@ function AdminPanel() {
   const [zalogowany, setZalogowany] = useState(false);
   const [haslo, setHaslo] = useState("");
   const [bladHasla, setBladHasla] = useState(false);
-  const [zakladka, setZakladka] = useState<"wypozyczenia" | "galeria">(
-    "wypozyczenia",
-  );
+  const [zakladka, setZakladka] = useState<
+    "wypozyczenia" | "galeria" | "ogloszenia"
+  >("wypozyczenia");
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -75,7 +76,9 @@ function AdminPanel() {
               />
             </div>
             {bladHasla && (
-              <p className="admin-blad">Nieprawidłowe hasło. Spróbuj ponownie.</p>
+              <p className="admin-blad">
+                Nieprawidłowe hasło. Spróbuj ponownie.
+              </p>
             )}
             <div className="admin-akcje">
               <button type="submit" className="admin-btn admin-btn-primary">
@@ -130,16 +133,23 @@ function AdminPanel() {
               }
               onClick={() => setZakladka("galeria")}
             >
-              Galeria (Portfolio)
+              Galeria
+            </button>
+            <button
+              type="button"
+              className={
+                "admin-tab-btn" + (zakladka === "ogloszenia" ? " aktywna" : "")
+              }
+              onClick={() => setZakladka("ogloszenia")}
+            >
+              Ogłoszenia
             </button>
           </div>
 
           <div className="admin-tresc">
-            {zakladka === "wypozyczenia" ? (
-              <PanelWypozyczenia />
-            ) : (
-              <PanelGaleria />
-            )}
+            {zakladka === "wypozyczenia" && <PanelWypozyczenia />}
+            {zakladka === "galeria" && <PanelGaleria />}
+            {zakladka === "ogloszenia" && <PanelOgloszenia />}
           </div>
         </div>
       )}
@@ -351,9 +361,7 @@ function PanelWypozyczenia() {
   return (
     <div className="admin-sekcja">
       <div
-        className={
-          "admin-karta-formularza" + (edytowany ? " tryb-edycji" : "")
-        }
+        className={"admin-karta-formularza" + (edytowany ? " tryb-edycji" : "")}
       >
         <div className="admin-karta-naglowek">
           <h4>
@@ -361,9 +369,7 @@ function PanelWypozyczenia() {
               ? `Edytujesz instrument: ${edytowany.nazwa}`
               : "Dodaj nowy instrument do wypożyczalni"}
           </h4>
-          {edytowany && (
-            <span className="admin-tryb-badge">Tryb edycji</span>
-          )}
+          {edytowany && <span className="admin-tryb-badge">Tryb edycji</span>}
         </div>
 
         <form className="admin-formularz" onSubmit={handleZapisz}>
@@ -627,17 +633,13 @@ function PanelGaleria() {
 
   function handleUsun(id: string) {
     if (!confirm("Na pewno usunąć ten obiekt z galerii?")) return;
-    apiFetch(`/galeria/${id}`, { method: "DELETE" }).then(() =>
-      pobierz(true),
-    );
+    apiFetch(`/galeria/${id}`, { method: "DELETE" }).then(() => pobierz(true));
   }
 
   return (
     <div className="admin-sekcja">
       <div
-        className={
-          "admin-karta-formularza" + (edytowany ? " tryb-edycji" : "")
-        }
+        className={"admin-karta-formularza" + (edytowany ? " tryb-edycji" : "")}
       >
         <div className="admin-karta-naglowek">
           <h4>
@@ -645,9 +647,7 @@ function PanelGaleria() {
               ? "Edytujesz wpis w galerii"
               : "Dodaj nową realizację do galerii"}
           </h4>
-          {edytowany && (
-            <span className="admin-tryb-badge">Tryb edycji</span>
-          )}
+          {edytowany && <span className="admin-tryb-badge">Tryb edycji</span>}
         </div>
 
         <form className="admin-formularz" onSubmit={handleZapisz}>
@@ -765,6 +765,226 @@ function PanelGaleria() {
                 </div>
               );
             })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PanelOgloszenia() {
+  const [ogloszenia, setOgloszenia] = useState<Ogloszenie[]>([]);
+  const [ladowanie, setLadowanie] = useState(false);
+  const [edytowany, setEdytowany] = useState<Ogloszenie | null>(null);
+  const [link, setLink] = useState("");
+  const [obecnyImg, setObecnyImg] = useState<string>("");
+  const [plik, setPlik] = useState<File | null>(null);
+  const [wysylanie, setWysylanie] = useState(false);
+
+  useEffect(() => {
+    pobierz();
+  }, []);
+
+  function pobierz(powiadomStrone = false) {
+    setLadowanie(true);
+    apiFetch("/ogloszenia")
+      .then((res) => res.json())
+      .then((dane) => {
+        setOgloszenia(dane);
+        if (powiadomStrone) {
+          window.dispatchEvent(
+            new CustomEvent("ogloszenia-zmienione", { detail: dane }),
+          );
+        }
+      })
+      .finally(() => setLadowanie(false));
+  }
+
+  function resetFormularza() {
+    setEdytowany(null);
+    setLink("");
+    setObecnyImg("");
+    setPlik(null);
+  }
+
+  function handleEdytuj(ogloszenie: Ogloszenie) {
+    setEdytowany(ogloszenie);
+    setLink(ogloszenie.link);
+    setObecnyImg(ogloszenie.img || "");
+    setPlik(null);
+  }
+
+  function handleWybierzPlik(e: React.ChangeEvent<HTMLInputElement>) {
+    if (!e.target.files || !e.target.files[0]) return;
+    setPlik(e.target.files[0]);
+    setObecnyImg("");
+    e.target.value = "";
+  }
+
+  async function handleZapisz(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!obecnyImg && !plik) {
+      alert("Dodaj zdjęcie do ogłoszenia.");
+      return;
+    }
+    setWysylanie(true);
+    try {
+      let img = obecnyImg;
+      if (plik) {
+        img = await wgrajPlik(plik);
+      }
+
+      const metoda = edytowany ? "PUT" : "POST";
+      const sciezka = edytowany ? `/ogloszenia/${edytowany.id}` : `/ogloszenia`;
+
+      const res = await apiFetch(sciezka, {
+        method: metoda,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ link, img }),
+      });
+      if (!res.ok) throw new Error();
+      resetFormularza();
+      pobierz(true);
+    } catch {
+      alert("Nie udało się zapisać ogłoszenia");
+    } finally {
+      setWysylanie(false);
+    }
+  }
+
+  function handleUsun(id: string) {
+    if (!confirm("Na pewno usunąć to ogłoszenie?")) return;
+    apiFetch(`/ogloszenia/${id}`, { method: "DELETE" }).then(() =>
+      pobierz(true),
+    );
+  }
+
+  return (
+    <div className="admin-sekcja">
+      <div
+        className={"admin-karta-formularza" + (edytowany ? " tryb-edycji" : "")}
+      >
+        <div className="admin-karta-naglowek">
+          <h4>
+            {edytowany ? "Edytujesz ogłoszenie" : "Dodaj nowe ogłoszenie"}
+          </h4>
+          {edytowany && <span className="admin-tryb-badge">Tryb edycji</span>}
+        </div>
+
+        <form className="admin-formularz" onSubmit={handleZapisz}>
+          <div className="admin-pole">
+            <label>Link do ogłoszenia (np. OLX, Allegro, Facebook) *</label>
+            <input
+              type="text"
+              placeholder="https://www.olx.pl/d/oferta/..."
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="admin-pole">
+            <label>Zdjęcie ogłoszenia *</label>
+            <label className="admin-upload-dropzone">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleWybierzPlik}
+              />
+              <span className="admin-upload-tytul">
+                + Kliknij tutaj, aby wybrać zdjęcie ogłoszenia
+              </span>
+              <span className="admin-upload-opis">
+                Wybierz plik graficzny z dysku (JPG, PNG, WEBP)
+              </span>
+            </label>
+          </div>
+
+          <PodgladZalacznikow
+            obecneZdjecia={obecnyImg ? [obecnyImg] : []}
+            pliki={plik ? [plik] : []}
+            onUsunObecne={() => setObecnyImg("")}
+            onUsunNowy={() => setPlik(null)}
+          />
+
+          <div className="admin-form-akcje">
+            <button
+              type="submit"
+              className="admin-btn admin-btn-primary"
+              disabled={wysylanie}
+            >
+              {wysylanie
+                ? "Trwa zapisywanie..."
+                : edytowany
+                  ? "Zapisz zmiany"
+                  : "Dodaj ogłoszenie"}
+            </button>
+            {edytowany && (
+              <button
+                type="button"
+                className="admin-btn admin-btn-secondary"
+                onClick={resetFormularza}
+              >
+                Anuluj edycję
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
+
+      <div className="admin-lista-sekcja">
+        <h4 className="admin-lista-naglowek">
+          Lista ogłoszeń ({ogloszenia.length})
+        </h4>
+
+        {ladowanie ? (
+          <p className="admin-info-tekst">Ładowanie ogłoszeń...</p>
+        ) : ogloszenia.length === 0 ? (
+          <p className="admin-info-tekst">
+            Brak ogłoszeń. Dodaj pierwsze ogłoszenie powyżej.
+          </p>
+        ) : (
+          <div className="admin-galeria-grid">
+            {ogloszenia.map((o) => (
+              <div
+                className={
+                  "admin-galeria-kafelek" +
+                  (edytowany?.id === o.id ? " aktywny-kafelek" : "")
+                }
+                key={o.id}
+              >
+                <div className="admin-galeria-miniatura-wrap">
+                  <img src={o.img} alt="Ogłoszenie" />
+                </div>
+                <div className="admin-galeria-opis">
+                  <a
+                    href={o.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="admin-ogloszenie-link"
+                    title={o.link}
+                  >
+                    {o.link}
+                  </a>
+                </div>
+                <div className="admin-galeria-akcje">
+                  <button
+                    type="button"
+                    className="admin-btn admin-btn-secondary"
+                    onClick={() => handleEdytuj(o)}
+                  >
+                    Edytuj
+                  </button>
+                  <button
+                    type="button"
+                    className="admin-btn admin-btn-danger"
+                    onClick={() => handleUsun(o.id)}
+                  >
+                    Usuń
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>

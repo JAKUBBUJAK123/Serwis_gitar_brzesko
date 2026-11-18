@@ -182,7 +182,6 @@ section[id] {
 .section-lead {
   color: var(--walnut-light);
   margin-bottom: 2.5rem;
-  max-width: 75ch;
 }
 .produkty-grid {
   display: grid;
@@ -758,6 +757,86 @@ footer {
 
 .modal-opis {
   margin-top: 1rem;
+}
+
+/* OGŁOSZENIA */
+#ogloszenia h2 {
+  font-size: 2rem;
+  color: var(--walnut);
+  margin-bottom: 0.6rem;
+}
+
+.ogloszenia-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.ogloszenie-karta {
+  background: #fff8ea;
+  border: 1px solid var(--brass);
+  border-radius: 10px;
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 14px rgba(43, 29, 20, 0.08);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.ogloszenie-karta:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 28px rgba(43, 29, 20, 0.18);
+  border-color: var(--walnut);
+}
+
+.ogloszenie-img-wrap {
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  background: #1e140d;
+  border-bottom: 1px solid var(--parchment-dark);
+}
+
+.ogloszenie-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: sepia(0.1);
+  transition:
+    transform 0.35s ease,
+    filter 0.35s ease;
+}
+
+.ogloszenie-karta:hover .ogloszenie-img-wrap img {
+  transform: scale(1.06);
+  filter: sepia(0);
+}
+
+.ogloszenie-stopka {
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ogloszenie-cta {
+  color: var(--wine);
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+
+.ogloszenie-karta:hover .ogloszenie-cta {
+  color: var(--walnut);
+  transform: translateX(4px);
 }
 @media (max-width: 800px) {
   .hamburger {
